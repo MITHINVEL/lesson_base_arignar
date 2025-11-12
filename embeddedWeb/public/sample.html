@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Arignar Launcher</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background: #f5f5f5;
+      }
+
+      /* Main layout container */
+      .vendor-portal {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+      }
+
+      /* Top header bar */
+      .top-header {
+        background: #ff9800;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        z-index: 100;
+        flex-shrink: 0;
+      }
+
+      .top-header .logo {
+        color: white;
+        font-weight: bold;
+        font-size: 18px;
+      }
+
+      .top-header .user-info {
+        color: white;
+        font-size: 14px;
+      }
+
+      /* Content area with sidebar - account for bottom nav */
+      .main-content {
+        display: flex;
+        flex: 1;
+        min-height: 0;
+        height: calc(
+          100vh - 60px - 39px
+        ); /* Subtract header and bottom nav heights */
+        overflow: hidden;
+      }
+
+      /* Left sidebar navigation */
+      .left-sidebar {
+        width: 22%; /* Set to 22% of screen width */
+        min-width: 230px; /* Ensure minimum usable width */
+        max-width: 380px; /* Prevent it from getting too wide on large screens */
+        background: white;
+        border-right: 1px solid #ddd;
+        overflow-y: auto;
+        transition: transform 0.3s ease;
+        height: 100%; /* Take full height of main-content */
+        flex-shrink: 0;
+      }
+
+      .left-sidebar.hidden {
+        transform: translateX(-100%);
+        position: absolute;
+        z-index: 50;
+      }
+
+      .sidebar-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid #eee;
+        background: #fafafa;
+      }
+
+      .sidebar-title {
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+        margin: 0;
+      }
+
+      .chapter-list {
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .chapter-button {
+        padding: 12px 15px;
+        font-size: 13px;
+        cursor: pointer;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        text-align: left;
+        transition: all 0.2s;
+      }
+
+      .chapter-button:hover {
+        background: #f0f0f0;
+        border-color: #bbb;
+      }
+
+      .chapter-button.active {
+        background: #e6f7ff;
+        border-color: #1890ff;
+      }
+
+      /* Main content area for Flutter app */
+      .flutter-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background: white;
+        position: relative;
+        min-height: 0;
+      }
+
+      /* Content header */
+      .content-header {
+        background: white;
+        padding: 7px 10px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 25px;
+      }
+
+      .content-title {
+        font-size: 14px;
+        color: #333;
+        margin: 0;
+      }
+
+      .nav-controls {
+        display: flex;
+        gap: 5px;
+      }
+
+      .nav-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 12px;
+      }
+
+      .nav-btn.home {
+        background: #ff9800;
+        color: white;
+      }
+
+      .nav-btn.prev,
+      .nav-btn.next {
+        background: #ffc107;
+        color: #333;
+      }
+
+      /* Flutter iframe area */
+      .flutter-content {
+        flex: 1;
+        position: relative;
+        min-height: 0;
+        padding: 0; /* No padding to maximize iframe space */
+        background: #fafafa; /* Subtle background */
+        overflow: hidden;
+      }
+
+      .error {
+        color: red;
+        padding: 10px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.9);
+        z-index: 1000;
+        display: none;
+      }
+
+      .error.visible {
+        display: block;
+      }
+
+      iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+        border-radius: 0; /* No rounded corners to maximize space */
+        box-shadow: none; /* No shadow to maximize space */
+        background: white;
+        display: block; /* Remove any default spacing */
+      }
+
+      /* Bottom navigation */
+      .bottom-nav {
+        background: #f8f8f8;
+        border-top: 1px solid #ddd;
+        padding: 7px 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        min-height: 25px;
+        height: 39px; /* Fixed height for calculations */
+        flex-shrink: 0; /* Prevent shrinking */
+        z-index: 10;
+      }
+
+      .bottom-nav .progress {
+        font-size: 12px;
+        color: #666;
+      }
+
+      .bottom-nav .nav-links {
+        display: flex;
+        gap: 20px;
+      }
+
+      .bottom-nav .nav-link {
+        color: #1890ff;
+        text-decoration: none;
+        font-size: 13px;
+      }
+
+      /* Hamburger menu button */
+      .sidebar-toggle {
+        display: none;
+        background: transparent;
+        color: white;
+        border: none;
+        padding: 5px;
+        cursor: pointer;
+        border-radius: 4px;
+        font-size: 18px;
+        transition: all 0.2s ease;
+      }
+
+      .sidebar-toggle:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .sidebar-toggle:active {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .chapter-info {
+        font-size: 11px;
+        color: #666;
+        margin-top: 4px;
+      }
+
+      /* Mobile overlay */
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 199;
+        transition: opacity 0.3s ease;
+      }
+
+      .sidebar-overlay.active {
+        display: block;
+        opacity: 1;
+      }
+
+      /* Responsive design */
+      @media (max-width: 1024px) {
+        /* Adjust sidebar width for medium screens */
+        .left-sidebar {
+          width: 22%;
+          min-width: 210px;
+          max-width: 340px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        /* Hide sidebar by default on mobile */
+        .left-sidebar {
+          position: fixed;
+          top: 60px;
+          bottom: 39px; /* Account for bottom nav height */
+          left: 0;
+          width: 320px; /* Slightly wider for mobile */
+          z-index: 200;
+          box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+          transform: translateX(-100%);
+          transition: transform 0.3s ease;
+          height: auto; /* Override height for mobile */
+        }
+
+        /* Show sidebar when active */
+        .left-sidebar.active {
+          transform: translateX(0);
+        }
+
+        /* Remove the hidden class approach - use active class instead */
+        .left-sidebar.hidden {
+          transform: translateX(-100%);
+        }
+
+        /* Show hamburger menu */
+        .sidebar-toggle {
+          display: block;
+        }
+
+        /* Full width container on mobile */
+        .flutter-container {
+          width: 100%;
+          margin-left: 0;
+        }
+
+        /* Responsive adjustments */
+        .content-header {
+          padding: 5px 8px;
+        }
+
+        .content-title {
+          font-size: 12px;
+        }
+
+        .nav-btn {
+          width: 25px;
+          height: 25px;
+          font-size: 10px;
+        }
+
+        .flutter-content {
+          padding: 10px 15px 15px 15px; /* Reduced padding for mobile */
+        }
+
+        .bottom-nav {
+          padding: 5px 7px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        /* Smaller sidebar width on very small screens */
+        .left-sidebar {
+          width: 280px; /* Keep reasonable width even on small screens */
+        }
+
+        .nav-controls {
+          gap: 3px;
+        }
+
+        .bottom-nav .nav-links {
+          gap: 15px;
+        }
+
+        .bottom-nav .nav-link {
+          font-size: 12px;
+        }
+
+        .flutter-content {
+          padding: 8px 12px 12px 12px; /* Further reduced for small screens */
+        }
+      }
+
+      /* Extra small screens */
+      @media (max-width: 320px) {
+        .left-sidebar {
+          width: 260px; /* Maintain usable width even on very small screens */
+        }
+
+        .sidebar-header {
+          padding: 10px 15px;
+        }
+
+        .chapter-button {
+          font-size: 12px;
+          padding: 10px 12px;
+        }
+
+        .flutter-content {
+          padding: 6px 10px 10px 10px; /* Minimal padding for very small screens */
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="vendor-portal">
+      <!-- Top Header Bar -->
+      <header class="top-header">
+        <div class="logo" id="headerTitle">Loading...</div>
+        <button
+          class="sidebar-toggle"
+          onclick="toggleSidebar()"
+          title="Toggle Menu"
+        >
+          ☰
+        </button>
+        <div class="user-info" id="userInfo">Loading... ▼</div>
+      </header>
+
+      <!-- Mobile sidebar overlay -->
+      <div
+        class="sidebar-overlay"
+        id="sidebarOverlay"
+        onclick="closeSidebar()"
+      ></div>
+
+      <!-- Main Content Area -->
+      <div class="main-content">
+        <!-- Left Sidebar Navigation -->
+        <nav class="left-sidebar" id="sidebar">
+          <div class="sidebar-header">
+            <h2 class="sidebar-title" id="sidebarTitle">Chapters</h2>
+          </div>
+
+          <!-- Flutter handles all responsive behavior -->
+          <div
+            style="
+              margin: 15px 10px;
+              padding: 15px;
+              background: #e6f7ff;
+              border-radius: 4px;
+              border: 1px solid #1890ff;
+            "
+          >
+            <div
+              style="
+                font-size: 13px;
+                font-weight: bold;
+                margin-bottom: 8px;
+                color: #333;
+              "
+            >
+              Responsive Layout Test
+            </div>
+            <div style="font-size: 11px; color: #666; line-height: 1.4">
+              Flutter app adapts to 22% vendor portal navigation space
+            </div>
+          </div>
+
+          <div class="chapter-list" id="chapterList">
+            <!-- Chapters will be dynamically loaded here -->
+          </div>
+        </nav>
+
+        <!-- Flutter App Container -->
+        <main class="flutter-container">
+          <!-- Content Header with Navigation -->
+          <div class="content-header">
+            <h1 class="content-title" id="contentTitle">
+              <div style="font-size: 14px; color: #333; margin-bottom: 2px">
+                Select a Chapter
+              </div>
+              <div style="font-size: 11px; color: #666; font-weight: normal">
+                Choose from the sidebar to begin
+              </div>
+            </h1>
+            <div class="nav-controls">
+              <button class="nav-btn home" onclick="goHome()" title="Home">
+                🏠
+              </button>
+              <button
+                class="nav-btn prev"
+                onclick="previousContent()"
+                title="Previous"
+              >
+                ‹
+              </button>
+              <button class="nav-btn next" onclick="nextContent()" title="Next">
+                ›
+              </button>
+            </div>
+          </div>
+
+          <!-- Flutter App Area -->
+          <div class="flutter-content">
+            <div id="error-message" class="error"></div>
+            <iframe
+              id="flutterFrame"
+              allow="microphone"
+              sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
+              loading="lazy"
+              importance="low"
+            >
+            </iframe>
+          </div>
+        </main>
+      </div>
+
+      <!-- Bottom Navigation -->
+      <footer class="bottom-nav">
+        <div class="progress">1/7 • 14%</div>
+        <div class="nav-links">
+          <a href="#" class="nav-link">← Back</a>
+          <a href="#" class="nav-link">Class rules for Students →</a>
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      //const FLUTTER_URL = "https://www.preview.arignar.app";
+      // Use production URL when deployed, localhost for local dev
+      const FLUTTER_URL = "http://localhost:5000";
+
+      console.log("Current hostname:", window.location.hostname);
+      console.log("Flutter URL set to:", FLUTTER_URL);
+
+      let activeChapterId = null;
+      let messageHandler = null;
+      let flutterStatus = null; // Track Flutter's current status
+      let username = "DM-KG00A3";
+      // Flutter app handles all responsive behavior - no device profiles needed
+
+      // Initialize iframe to use constrained vendor portal space
+      function setupIframe() {
+        const iframe = document.getElementById("flutterFrame");
+        const flutterContent = document.querySelector(".flutter-content");
+
+        console.log(
+          `🖼️ Setting up iframe for constrained vendor portal layout`
+        );
+        console.log(
+          `📐 Available Flutter space: ${flutterContent.clientWidth}px x ${flutterContent.clientHeight}px`
+        );
+
+        // Let iframe use available space within vendor portal constraints
+        iframe.style.width = "100%";
+        iframe.style.height = "100%";
+        iframe.style.border = "none";
+      }
+
+      // Enhanced sidebar toggle for mobile
+      function toggleSidebar() {
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.getElementById("sidebarOverlay");
+
+        // Toggle sidebar visibility
+        if (sidebar.classList.contains("active")) {
+          closeSidebar();
+        } else {
+          openSidebar();
+        }
+      }
+
+      function openSidebar() {
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.getElementById("sidebarOverlay");
+
+        sidebar.classList.add("active");
+        sidebar.classList.remove("hidden");
+        overlay.classList.add("active");
+
+        // Prevent body scroll when sidebar is open on mobile
+        if (window.innerWidth <= 768) {
+          document.body.style.overflow = "hidden";
+        }
+      }
+
+      function closeSidebar() {
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.getElementById("sidebarOverlay");
+
+        sidebar.classList.remove("active");
+        sidebar.classList.add("hidden");
+        overlay.classList.remove("active");
+
+        // Restore body scroll
+        document.body.style.overflow = "";
+      }
+
+      // Close sidebar when clicking on a chapter (mobile UX)
+      function openChapterAndCloseSidebar(chapterId) {
+        if (window.innerWidth <= 768) {
+          closeSidebar();
+        }
+        openChapter(chapterId);
+      }
+
+      // Handle window resize
+      window.addEventListener("resize", function () {
+        if (window.innerWidth > 768) {
+          // On desktop, ensure sidebar is visible and overlay is hidden
+          const sidebar = document.getElementById("sidebar");
+          const overlay = document.getElementById("sidebarOverlay");
+          sidebar.classList.remove("active", "hidden");
+          overlay.classList.remove("active");
+          document.body.style.overflow = "";
+        }
+      });
+
+      // Handle keyboard shortcuts
+      document.addEventListener("keydown", function (event) {
+        // Close sidebar on ESC key
+        if (event.key === "Escape") {
+          const sidebar = document.getElementById("sidebar");
+          if (sidebar.classList.contains("active")) {
+            closeSidebar();
+          }
+        }
+      });
+
+      // Initialize sidebar state on page load
+      document.addEventListener("DOMContentLoaded", function () {
+        // On mobile, ensure sidebar starts hidden
+        if (window.innerWidth <= 768) {
+          const sidebar = document.getElementById("sidebar");
+          const overlay = document.getElementById("sidebarOverlay");
+          sidebar.classList.add("hidden");
+          sidebar.classList.remove("active");
+          overlay.classList.remove("active");
+        }
+      });
+
+      // Update content title based on selected chapter
+      function updateContentTitle(chapterId) {
+        const chapter = CHAPTERS[chapterId];
+        const titleElement = document.getElementById("contentTitle");
+
+        if (chapter && titleElement) {
+          // Update with English title and Tamil subtitle
+          titleElement.innerHTML = `
+            <div style="font-size: 14px; color: #333; margin-bottom: 2px;">
+              ${chapter.title}
+            </div>
+            <div style="font-size: 11px; color: #666; font-weight: normal;">
+              ${chapter.subtitle}
+            </div>
+          `;
+          console.log(`📝 Updated content title to: ${chapter.title}`);
+        }
+      }
+
+      // Navigation functions
+      function goHome() {
+        console.log("Navigate to home");
+        // Add your home navigation logic here
+      }
+
+      function previousContent() {
+        console.log("Navigate to previous content");
+        // Add your previous content logic here
+      }
+
+      function nextContent() {
+        console.log("Navigate to next content");
+        // Add your next content logic here
+      }
+
+      // Auto-hide sidebar on mobile when clicking outside
+      document.addEventListener("click", function (event) {
+        const sidebar = document.getElementById("sidebar");
+        const toggleBtn = document.querySelector(".sidebar-toggle");
+
+        if (
+          window.innerWidth <= 768 &&
+          !sidebar.contains(event.target) &&
+          !toggleBtn.contains(event.target)
+        ) {
+          sidebar.classList.add("hidden");
+        }
+      });
+
+      // Initialize iframe setup on page load and resize
+      window.addEventListener("load", setupIframe);
+      window.addEventListener("resize", setupIframe);
+
+      // Load ITA subjects data when page loads
+      document.addEventListener("DOMContentLoaded", function () {
+        loadITASubjects();
+        // Initialize Flutter app on page load
+        initializeFlutterApp();
+      });
+
+      // Initialize Flutter app without requiring a chapter selection
+      function initializeFlutterApp() {
+        const iframe = document.getElementById("flutterFrame");
+        if (!iframe) {
+          console.error("Flutter iframe not found");
+          return;
+        }
+
+        console.log("Initializing Flutter app on page load");
+        console.log("Flutter URL:", FLUTTER_URL);
+
+        // Set iframe source to load Flutter app
+        iframe.src = `${FLUTTER_URL}`;
+
+        // Setup basic message handler for Flutter initialization
+        if (messageHandler) {
+          window.removeEventListener("message", messageHandler);
+        }
+
+        messageHandler = function (event) {
+          // Check origin matches Flutter URL
+          const flutterOrigin = new URL(FLUTTER_URL).origin;
+          if (event.origin !== flutterOrigin) {
+            return;
+          }
+
+          console.log("Received message from Flutter:", event.data);
+          flutterStatus = event.data?.type;
+
+          // Handle Flutter initialization messages
+          if (event.data?.type === "ARIGNAR_INITIATED") {
+            console.log("Flutter app initiated");
+            // Send basic auth without chapter data
+            sendFlutterMessage("INIT_AUTH", {
+              auth: {
+                username: username,
+                profileId: "profile-123",
+              },
+            });
+          } else if (event.data?.type === "ARIGNAR_READY") {
+            console.log("Flutter app ready");
+          }
+        };
+
+        window.addEventListener("message", messageHandler);
+      }
+
+      let CHAPTERS = {};
+      let itaSubjectsData = null;
+
+      // Load ITA subjects data and initialize chapters
+      async function loadITASubjects() {
+        try {
+          const response = await fetch("itasubjects.json");
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          itaSubjectsData = await response.json();
+          console.log("Loaded ITA subjects data:", itaSubjectsData);
+
+          // Initialize chapters from the loaded data
+          initializeChapters();
+        } catch (error) {
+          console.error("Failed to load ITA subjects:", error);
+          showError(`Failed to load chapters: ${error.message}`);
+        }
+      }
+
+      // Initialize chapters from ITA subjects data
+      function initializeChapters() {
+        if (
+          !itaSubjectsData ||
+          !itaSubjectsData.levels ||
+          !itaSubjectsData.levels[0]
+        ) {
+          console.error("Invalid ITA subjects data structure");
+          return;
+        }
+
+        const kgLevel = itaSubjectsData.levels[0]; // Get KG level
+        const chapters = kgLevel.Chapters || [];
+
+        // Clear existing chapters
+        CHAPTERS = {};
+
+        // Generate chapter buttons and CHAPTERS object
+        const chapterList = document.getElementById("chapterList");
+        chapterList.innerHTML = "";
+
+        chapters.forEach((chapter, index) => {
+          const chapterKey = `chapter${index + 1}`;
+
+          // Create chapter button
+          const button = document.createElement("button");
+          button.className = "chapter-button";
+          button.id = `btn-${chapterKey}`;
+          button.onclick = () => openChapterAndCloseSidebar(chapterKey);
+
+          // Use localized name if available, otherwise fall back to English name
+          const displayName = chapter.LocalizedName || chapter.Name;
+          const description =
+            chapter.LocalizedDescription || chapter.Description;
+
+          button.innerHTML = `
+            ${displayName}
+            <div class="chapter-info">ID: ${chapter.id.substring(
+              0,
+              8
+            )} • Order: ${chapter.ChapterOrder}</div>
+          `;
+
+          chapterList.appendChild(button);
+
+          // Add to CHAPTERS object
+          CHAPTERS[chapterKey] = {
+            chapterId: chapter.ChapterOrder.toString(),
+            referenceId: chapter.id,
+            referenceType: "Chapter",
+            classCode: kgLevel.ClassCode,
+            locale: "en",
+            title: chapter.Name,
+            subtitle: displayName,
+            description: description,
+            chapterOrder: chapter.ChapterOrder,
+          };
+        });
+
+        // Update header with subject information
+        updateHeaderInfo();
+
+        console.log(
+          `Initialized ${
+            Object.keys(CHAPTERS).length
+          } chapters from ITA subjects data`
+        );
+      }
+
+      // Update header with subject and level information
+      function updateHeaderInfo() {
+        if (
+          !itaSubjectsData ||
+          !itaSubjectsData.levels ||
+          !itaSubjectsData.levels[0]
+        ) {
+          return;
+        }
+
+        const subject = itaSubjectsData;
+        const level = itaSubjectsData.levels[0];
+
+        // Update header title
+        const headerTitle = document.getElementById("headerTitle");
+        if (headerTitle) {
+          headerTitle.textContent = `${level.ClassName} for Student`;
+        }
+
+        // Update user info
+        const userInfo = document.getElementById("userInfo");
+        if (userInfo) {
+          userInfo.textContent = `${level.ClassCode} (STUDENT) ▼`;
+        }
+
+        // Update sidebar title
+        const sidebarTitle = document.getElementById("sidebarTitle");
+        if (sidebarTitle) {
+          sidebarTitle.textContent = `${subject.Name} - ${level.Name} Chapters`;
+        }
+      }
+
+      function showError(message) {
+        const errorEl = document.getElementById("error-message");
+        errorEl.textContent = message;
+        errorEl.classList.add("visible");
+        setTimeout(() => {
+          errorEl.classList.remove("visible");
+        }, 5000);
+      }
+
+      async function openChapter(chapterId) {
+        try {
+          console.log("Opening chapter:", chapterId);
+
+          // Update content title immediately
+          updateContentTitle(chapterId);
+
+          // Update active state
+          if (activeChapterId) {
+            document
+              .getElementById(`btn-${activeChapterId}`)
+              .classList.remove("active");
+          }
+          document.getElementById(`btn-${chapterId}`).classList.add("active");
+          activeChapterId = chapterId;
+
+          //If Flutter is already initialized, just send the appropriate message based on status
+          if (flutterStatus === "ARIGNAR_CHAPTER_LOADED") {
+            console.log(
+              "Flutter is already initialized, sending appropriate message based on status"
+            );
+            sendFlutterMessage("INIT_READY_STATE", {
+              chapterId: CHAPTERS[chapterId].chapterId,
+              referenceId: CHAPTERS[chapterId].referenceId,
+              referenceType: CHAPTERS[chapterId].referenceType,
+              locale: CHAPTERS[chapterId].locale,
+              profileId: "profile-123",
+            });
+            return;
+          }
+
+          if (flutterStatus === "ARIGNAR_READY") {
+            initializeContent(CHAPTERS[chapterId]);
+            return;
+          }
+
+          const chapter = CHAPTERS[chapterId];
+          const iframe = document.getElementById("flutterFrame");
+
+          // Clean up existing message handler
+          if (messageHandler) {
+            window.removeEventListener("message", messageHandler);
+          }
+
+          // Setup new message handler
+          messageHandler = createMessageHandler(chapter);
+          window.addEventListener("message", messageHandler);
+
+          console.log("Current hostname:", window.location.hostname);
+          console.log("Flutter URL set to:", FLUTTER_URL);
+
+          // Set iframe source - Flutter will handle responsive layout
+          iframe.src = `${FLUTTER_URL}`;
+        } catch (error) {
+          showError(`Failed to initialize: ${error.message}`);
+        }
+      }
+
+      function createMessageHandler(chapter) {
+        return function (event) {
+          if (event.origin !== FLUTTER_URL) return;
+
+          console.log("Received message:", event.data);
+
+          //Update Flutter status
+          flutterStatus = event.data.type;
+
+          switch (event.data.type) {
+            case "ARIGNAR_INITIATED":
+              sendFlutterMessage("INIT_AUTH", {
+                auth: {
+                  username: username,
+                  profileId: "profile-123",
+                },
+                navigation: chapter,
+              });
+              break;
+
+            case "AUTH_SUCCESS":
+              sendFlutterMessage("INIT_PROFILE", {
+                chapterId: chapter.chapterId,
+                classCode: chapter.classCode,
+              });
+              break;
+
+            case "ARIGNAR_PROFILE_LOADED":
+              initializeContent(chapter);
+              break;
+
+            case "ARIGNAR_READY":
+              console.log("Flutter app ready");
+              break;
+
+            case "AUTH_ERROR":
+              showError(`Authentication error: ${event.data.error}`);
+              break;
+
+            case "ARIGNAR_ERROR":
+              showError(`Flutter error: ${event.data.error}`);
+              break;
+          }
+        };
+      }
+
+      function initializeContent(chapter) {
+        sendFlutterMessage("INIT_CHAPTER", {
+          chapterId: chapter.chapterId,
+          referenceId: chapter.referenceId,
+          classCode: chapter.classCode,
+          referenceType: chapter.referenceType,
+          locale: chapter.locale,
+          profileId: "profile-123",
+        });
+      }
+
+      function sendFlutterMessage(type, data) {
+        const iframe = document.getElementById("flutterFrame");
+        if (iframe && iframe.contentWindow) {
+          console.log("Sending message:", { type, data });
+          iframe.contentWindow.postMessage({ type, data }, FLUTTER_URL);
+        }
+      }
+
+      // Initialize with first chapter
+      /*document.addEventListener("DOMContentLoaded", () => {
+				openChapter("chapter1");
+			});*/
+    </script>
+  </body>
+</html>

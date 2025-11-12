@@ -1,0 +1,28 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Start Android Emulator",
+            "type": "shell",
+            "command": "${env:ANDROID_HOME}/emulator/emulator",
+            "args": [
+                "-avd",
+                "Pixel_5_API_31_-_Dev"  // Replace with your emulator name
+            ],
+            "presentation": {
+                "reveal": "silent"
+            }
+        }
+    ],
+    "inputs": [
+        {
+            "id": "selectEmulator",
+            "type": "command",
+            "command": "shellCommand.execute",
+            "args": {
+                "command": "${env:ANDROID_HOME}/emulator/emulator -list-avds",
+                "description": "Select Emulator"
+            }
+        }
+    ]
+} 

@@ -1,0 +1,313 @@
+{
+  "id": "eb22fc7a-59bc-4cd7-b994-130f430ae456",
+  "Name": "Tamil ITA",
+  "Description": "International Tamil Academy Tamil",
+  "levels": [
+    {
+      "id": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+      "Name": "KG",
+      "Description": "KG",
+      "ClassCode": "ITA-KG",
+      "ClassName": "Kindergarten",
+      "Chapters": [
+        {
+          "id": "3130f6ef-0bb5-408e-889a-19ca67ea704d",
+          "Name": "Week 0",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "No content found for this week.",
+          "LocalizedName": "No content found for this week.",
+          "ChapterOrder": 0,
+          "LocalizedDescription": "No content found for this week."
+        },
+        {
+          "id": "7dac08e7-8227-4d84-a34a-ca11fb6a676e",
+          "Name": "Week 1",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week 1",
+          "LocalizedName": "உறவினர்கள் ",
+          "ChapterOrder": 1,
+          "LocalizedDescription": "உறவினர்கள்"
+        },
+        {
+          "id": "158e0619-5a1a-4fa8-96e4-b7e0a9470711",
+          "Name": "Week  2",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week  2",
+          "LocalizedName": "உயிரெழுத்துகள்  'அ ' & 'ஆ '",
+          "ChapterOrder": 2,
+          "LocalizedDescription": "உயிரெழுத்துகள்  'அ ' & 'ஆ '"
+        },
+        {
+          "id": "83312cf8-8ea3-41c5-b132-e0c6f28db591",
+          "Name": "Week  3",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week  3",
+          "LocalizedName": "உயிர் எழுத்துகள் 'இ' 'ஈ' ,வீட்டு விலங்குகள்",
+          "ChapterOrder": 3,
+          "LocalizedDescription": "உயிர் எழுத்துகள் 'இ' 'ஈ' ,வீட்டு விலங்குகள்"
+        },
+        {
+          "id": "6878c62e-91d9-4eab-8ee1-d7a91a758812",
+          "Name": "Week  4",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week  4",
+          "LocalizedName": "உயிரெழுத்துகள்  'உ' &'ஊ'",
+          "ChapterOrder": 4,
+          "LocalizedDescription": "உயிரெழுத்துகள்  'உ' &'ஊ'"
+        },
+        {
+          "id": "65975440-4842-45b4-83fb-0a49da6ac2e7",
+          "Name": "Week  5",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week  5",
+          "LocalizedName": "உயிரெழுத்துகள் 'உ ' & 'ஊ '",
+          "ChapterOrder": 5,
+          "LocalizedDescription": "உயிரெழுத்துகள் 'உ ' & 'ஊ '"
+        },
+        {
+          "id": "535c953b-050e-4be5-b2f7-07e7e995a710",
+          "Name": "Week 6",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week 6",
+          "LocalizedName": "பாடம்(13) - ஐ , பண்ணை விலங்குகள் பாடல்",
+          "ChapterOrder": 6,
+          "LocalizedDescription": "பாடம்(13) - ஐ , பண்ணை விலங்குகள் பாடல்\n\n"
+        },
+        {
+          "id": "70429e4c-1b11-4958-bd75-ff36cd3fbba6",
+          "Name": "Week 7",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week 7",
+          "LocalizedName": "பாடம்(14) & (15) ஒ , ஓ  பாடம்(10)எண்கள்",
+          "ChapterOrder": 7,
+          "LocalizedDescription": "பாடம்(14) & (15) ஒ , ஓ  பாடம்(10)எண்கள்"
+        },
+        {
+          "id": "8aa06572-3853-46d2-b011-28926a7560c5",
+          "Name": "Week 8",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week 8",
+          "LocalizedName": "பாடம்(17) உயிர் எழுத்து - ஔ",
+          "ChapterOrder": 8,
+          "LocalizedDescription": "பாடம்(17) உயிர் எழுத்து - ஔ"
+        },
+        {
+          "id": "192e2a7f-4971-4ca1-88fc-af90cfd67b7b",
+          "Name": "Week 9",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week 9",
+          "LocalizedName": "பாடம்(16) & (17) பேசுவோம் - 4",
+          "ChapterOrder": 9,
+          "LocalizedDescription": "பாடம்(16) & (17) பேசுவோம் - 4"
+        },
+        {
+          "id": "7a9f7dc1-daa0-4ee3-bf91-566e0a970225",
+          "Name": "Week 10",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week 10",
+          "LocalizedName": "பாடம் (20) க், ங்",
+          "ChapterOrder": 10,
+          "LocalizedDescription": "பாடம் (20) க், ங்"
+        },
+        {
+          "id": "186bbd96-8ccf-409e-9c61-aace7d6f97c4",
+          "Name": "Week 11",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week 11",
+          "LocalizedName": "பாடம்(22) ச் ஞ்,  பேசுவோம் -5",
+          "ChapterOrder": 11,
+          "LocalizedDescription": "பாடம்(22) ச் ஞ்,  பேசுவோம் -5"
+        },
+        {
+          "id": "dbbc96de-1190-4135-8d18-a73ad7c9e3c1",
+          "Name": "Week 12",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week 12",
+          "LocalizedName": "பாடம்(24) ட்,ண், பாடம்(21)காட்டு விலங்குகள்  ",
+          "ChapterOrder": 12,
+          "LocalizedDescription": "பாடம்(24) ட்,ண், பாடம்(21)காட்டு விலங்குகள்  "
+        },
+        {
+          "id": "e729b079-f345-4001-b9ae-787c62e23018",
+          "Name": "Week 13",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week 13",
+          "LocalizedName": "பாடம்(25) த், ந்   பாடம்(32) நிறங்கள்",
+          "ChapterOrder": 13,
+          "LocalizedDescription": "பாடம்(25) த், ந்   பாடம்(32) நிறங்கள்"
+        },
+        {
+          "id": "0bc8c7fd-a908-4e6d-8c58-d36d4688f5fa",
+          "Name": "Week 14",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week 14",
+          "LocalizedName": "பாடம்(27) ப்,ம்",
+          "ChapterOrder": 14,
+          "LocalizedDescription": "பாடம்(27) ப்,ம்"
+        },
+        {
+          "id": "9f05cb35-0f2f-46be-bcac-d64f7f8fde1f",
+          "Name": "Week 15",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week 15",
+          "LocalizedName": "பாடம்(29) ய். ர் பாடம்(30) பறவைகள்",
+          "ChapterOrder": 15,
+          "LocalizedDescription": "பாடம்(29) ய். ர் பாடம்(30) பறவைகள்"
+        },
+        {
+          "id": "41beed1c-1d00-45fd-844a-ca50d828664f",
+          "Name": "Week 16",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week 16",
+          "LocalizedName": "ல் - வ் , பச்சைக்கிளியே பறந்து வா!, பேசுவோம் - 6",
+          "ChapterOrder": 16,
+          "LocalizedDescription": "ல் - வ் , பச்சைக்கிளியே பறந்து வா!, பேசுவோம் - 6"
+        },
+        {
+          "id": "4b9de0fb-b228-4361-ab1b-7ede8a321cd4",
+          "Name": "Week 17",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week 17",
+          "LocalizedName": "பாடம் (33) ழ்,ள் மற்றும் Birds theme words",
+          "ChapterOrder": 17,
+          "LocalizedDescription": "பாடம் (33) ழ்,ள் மற்றும் Birds theme words"
+        },
+        {
+          "id": "e3e1d7f2-d9ac-440c-b443-e8cacbda7032",
+          "Name": "Week 18",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week 18",
+          "LocalizedName": "பாடம் (35)  ற்-ன், பா(38) காய்கறிகள் & பேசுவோம் - 7",
+          "ChapterOrder": 18,
+          "LocalizedDescription": "பாடம் (35)  ற்-ன், பா(38) காய்கறிகள் & பேசுவோம் - 7"
+        },
+        {
+          "id": "a9eb9950-ea20-4108-aaa2-802c0256e25b",
+          "Name": "Week 19",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week 19",
+          "LocalizedName": "பாடம் (36,37) க,ங,ச & காய்கறிகள்",
+          "ChapterOrder": 19,
+          "LocalizedDescription": "பாடம் (36,37) க,ங,ச & காய்கறிகள்"
+        },
+        {
+          "id": "0f22a732-f6ea-46e1-9ac2-4422e3aacfbd",
+          "Name": "Week 20",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week 20",
+          "LocalizedName": "பாடம் (37,39) ஞ,ட,ண பாடம்(41)(48)",
+          "ChapterOrder": 20,
+          "LocalizedDescription": "பாடம் (37,39) ஞ,ட,ண பாடம்(41)(48)"
+        },
+        {
+          "id": "c25c639f-b0b5-445b-a24c-3dd435cdb1c3",
+          "Name": "Week 21",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week 21",
+          "LocalizedName": "பாடம் (40, 43) த, ந, ப & பேசுவோம் - 8",
+          "ChapterOrder": 21,
+          "LocalizedDescription": "பாடம் (40, 43) த, ந, ப & பேசுவோம் - 8"
+        },
+        {
+          "id": "69b14718-a1b1-4066-a7b4-821b5b8a0b9b",
+          "Name": "Week 22",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week 22",
+          "LocalizedName": "பாடம் (43, 44) ம,ய.ர &  பாடம்(56) - பூக்கள் ",
+          "ChapterOrder": 22,
+          "LocalizedDescription": "பாடம் (43, 44) ம,ய.ர &  பாடம்(56) - பூக்கள் "
+        },
+        {
+          "id": "d72238d5-fa7e-4ee3-8c4b-e349ce155601",
+          "Name": "Week 23",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week 23",
+          "LocalizedName": "பாடம் (45) & (46) & பழங்கள்  ",
+          "ChapterOrder": 23,
+          "LocalizedDescription": "பாடம் (45) & (46) & பழங்கள்  "
+        },
+        {
+          "id": "e5c5a230-310d-4a9c-a583-b2b7bd18570b",
+          "Name": "Week 24",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week 24",
+          "LocalizedName": "பாடம் (46)&(49) ள ற ன & கிழமைகள் ",
+          "ChapterOrder": 24,
+          "LocalizedDescription": "பாடம் (46)&(49) ள ற ன & கிழமைகள் "
+        },
+        {
+          "id": "c7511791-5e9c-40fa-a9f6-e1e3d0889c5b",
+          "Name": "Week 25",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week 25",
+          "LocalizedName": "பாடம் 51 கா & பாடம் (58) உடல் உறுப்புகள் ",
+          "ChapterOrder": 25,
+          "LocalizedDescription": "பாடம் 51 கா & பாடம் (58) உடல் உறுப்புகள் "
+        },
+        {
+          "id": "bb49c6de-15ac-42c0-864d-1a1451536c6a",
+          "Name": "Week 26",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week 26",
+          "LocalizedName": "உயிர்மெய் எழுத்துகள்  டா - நா",
+          "ChapterOrder": 26,
+          "LocalizedDescription": "உயிர்மெய் எழுத்துகள்  டா - நா"
+        },
+        {
+          "id": "d393b669-10ab-4df4-aebc-8e4c0cbfa49b",
+          "Name": "Week 27",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week 27",
+          "LocalizedName": "உயிர்மெய் எழுத்துகள் பா - ரா",
+          "ChapterOrder": 27,
+          "LocalizedDescription": "உயிர்மெய் எழுத்துகள் பா - ரா"
+        },
+        {
+          "id": "405a8e4c-a48c-4137-80a3-2a7a0f72e3c5",
+          "Name": "Week  28",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week  28",
+          "LocalizedName": "உயிர்மெய் எழுத்துகள்   லா - னா",
+          "ChapterOrder": 28,
+          "LocalizedDescription": "உயிர்மெய் எழுத்துகள்   லா - னா"
+        },
+        {
+          "id": "d746c643-701e-4c95-a98e-1fab18e0b529",
+          "Name": "Week 29",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week 29",
+          "LocalizedName": "பாடம்(59) திரும்பப் படித்தல் ,பேசுவோம் வாங்க - 12",
+          "ChapterOrder": 29,
+          "LocalizedDescription": "பாடம்(59) திரும்பப் படித்தல், பேசுவோம் வாங்க - 12"
+        },
+        {
+          "id": "e4cf2c5c-0c61-4dd9-883d-4ef8d5a98111",
+          "Name": "Week 30",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week 30",
+          "LocalizedName": "திருப்புதல் - உயிர் எழுத்துகள்,  மெய் எழுத்துகள்",
+          "ChapterOrder": 30,
+          "LocalizedDescription": "திருப்புதல் - உயிர் எழுத்துகள்,  மெய் எழுத்துகள்"
+        },
+        {
+          "id": "8434ca34-2140-4d53-97d0-d592d2b4df74",
+          "Name": "Week 31",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week 31",
+          "LocalizedName": "திருப்புதல் - அகர வரிசை (க - ன) ஆகார வரிசை (கா -னா) எழுத்துகள்",
+          "ChapterOrder": 31,
+          "LocalizedDescription": "திருப்புதல் - அகர வரிசை (க - ன) ஆகார வரிசை (கா -னா) எழுத்துகள்"
+        },
+        {
+          "id": "c84d0720-a73e-4d4b-9164-b1c25b2b8920",
+          "Name": "Week 32",
+          "levelID": "239b1868-2b1a-4bca-9bfc-2cbc6f4cd7f6",
+          "Description": "Week 32",
+          "LocalizedName": "உயிர் எழுத்துகள்,  மெய் எழுத்துகள்(மாதிரித்தேர்வு)",
+          "ChapterOrder": 32,
+          "LocalizedDescription": "உயிர் எழுத்துகள்,  மெய் எழுத்துகள்(மாதிரித்தேர்வு)"
+        }
+      ]
+    }
+  ]
+}

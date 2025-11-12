@@ -1,0 +1,107 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "name": "Flutter Run (No Debug)",
+            "program": "lib/main.dart",
+            "request": "launch",
+            "type": "dart",
+            "noDebug": true,
+            "preLaunchTask": "Start Android Emulator"
+        },
+        {
+            "name": "Flutter (emulator)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "deviceId": "android"
+        },
+        {
+            "name": "arignar-amplify-flutter-dev",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "arignar-amplify-flutter-dev (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "arignar-amplify-flutter-dev (release mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "Flutter (moto g power)",
+            "program": "lib/main.dart",
+            "deviceId": "ZY227VTZQK",
+            "request": "launch",
+            "noDebug": false,
+            "type": "dart"
+        },
+        {
+            "name": "Flutter (moto g power - wireless)",
+            "program": "lib/main.dart",
+            "deviceId": "adb-ZY227VTZQK-ICldaa._adb-tls-connect._tcp.",
+            "request": "launch",
+            "noDebug": false,
+            "type": "dart"
+        },
+        {
+            "name": "Flutter Web (port 3000)",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "-d",
+                "chrome",
+                "--web-port",
+                "3000",
+                "--hot"
+            ]
+        },
+        {
+            "name": "Flutter EmbeddedWeb Preview (port 5000)",
+            "program": "lib/main.dart",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "-d",
+                "chrome",
+                "--web-port",
+                "5000",
+                "--hot",
+                "--web-launch-url",
+                "http://localhost:5000/"
+            ]
+        },
+        {
+            "name": "Flutter EmbeddedWeb Preview (Fast)",
+            "program": "/Users/sivashanmugamthangavel/projects/arignar-amplify-flutter-embedded/lib/previewmain.dart",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "-d",
+                "chrome",
+                "--web-port",
+                "5000",
+                "--profile",
+                "--web-renderer",
+                "html",
+                "--no-web-resources-cdn",
+                "--web-launch-url",
+                "http://localhost:5000/"
+            ]
+        },
+        {
+            "name": "Flutter (Pixel 5 - 393x851)",
+            "program": "lib/main.dart",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "Pixel_5_393x851"
+        }
+
+    ]
+}

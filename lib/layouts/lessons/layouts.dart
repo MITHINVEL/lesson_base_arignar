@@ -53,15 +53,15 @@ class AdaptiveLessonLayout extends StatelessWidget {
                 ScalableText(
                   lessonTitle,
                   style: AppTextStyles.headlineMedium(context),
-                  maxFontSize: info.isDesktop ? 20 : 18,
-                  minFontSize: 16,
+                  maxFontSize: info.isDesktop ? 18 : 16,
+                  minFontSize: 14,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 ScalableText(
                   'Stay on track and complete the lesson at your own pace.',
                   style: AppTextStyles.bodyMedium(context),
-                  maxFontSize: 13,
-                  minFontSize: 12,
+                  maxFontSize: 12,
+                  minFontSize: 11,
                 ),
               ],
             ),
@@ -94,18 +94,24 @@ class AdaptiveLessonLayout extends StatelessWidget {
                     children: [
                       questionCard,
                       const SizedBox(height: 12),
-                      DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: AppColors.white,
-                          borderRadius: BorderRadius.circular(16),
+                      // Only show mainContent container and navigation if content exists
+                      // Hide if mainContent is SizedBox.shrink() (empty widget)
+                      if (!(mainContent is SizedBox &&
+                          (mainContent as SizedBox).width == 0.0 &&
+                          (mainContent as SizedBox).height == 0.0)) ...[
+                        DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: AppColors.white,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: mainContent,
+                          ),
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: mainContent,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      _buildNavigationRow(context),
+                        const SizedBox(height: 12),
+                        _buildNavigationRow(context),
+                      ],
                     ],
                   ),
                 ),
@@ -164,16 +170,23 @@ class AdaptiveLessonLayout extends StatelessWidget {
             SizedBox(height: isCompactWidth ? 8 : 10),
             questionCard,
             SizedBox(height: isCompactWidth ? 8 : 10),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: AppColors.white,
-                borderRadius: BorderRadius.circular(16),
+            // Only show mainContent container and navigation if content exists
+            if (!(mainContent is SizedBox &&
+                (mainContent as SizedBox).width == 0.0 &&
+                (mainContent as SizedBox).height == 0.0)) ...[
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: AppColors.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(isCompactWidth ? 10 : 12),
+                  child: mainContent,
+                ),
               ),
-              child: Padding(
-                padding: EdgeInsets.all(isCompactWidth ? 10 : 12),
-                child: mainContent,
-              ),
-            ),
+              SizedBox(height: isCompactWidth ? 8 : 10),
+              _buildNavigationRow(context),
+            ],
             SizedBox(height: isCompactWidth ? 8 : 10),
             DecoratedBox(
               decoration: BoxDecoration(
@@ -185,8 +198,6 @@ class AdaptiveLessonLayout extends StatelessWidget {
                 child: progressContent,
               ),
             ),
-            SizedBox(height: isCompactWidth ? 8 : 10),
-            _buildNavigationRow(context),
           ],
         ),
       );
@@ -201,18 +212,25 @@ class AdaptiveLessonLayout extends StatelessWidget {
           SizedBox(height: isCompactWidth ? 6 : 8),
           questionCard,
           SizedBox(height: isCompactWidth ? 6 : 8),
-          Flexible(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: AppColors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(isCompactWidth ? 10 : 12),
-                child: mainContent,
+          // Only show mainContent container and navigation if content exists
+          if (!(mainContent is SizedBox &&
+              (mainContent as SizedBox).width == 0.0 &&
+              (mainContent as SizedBox).height == 0.0)) ...[
+            Flexible(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: AppColors.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(isCompactWidth ? 10 : 12),
+                  child: mainContent,
+                ),
               ),
             ),
-          ),
+            SizedBox(height: isCompactWidth ? 6 : 8),
+            _buildNavigationRow(context),
+          ],
           SizedBox(height: isCompactWidth ? 6 : 8),
           DecoratedBox(
             decoration: BoxDecoration(
@@ -224,8 +242,6 @@ class AdaptiveLessonLayout extends StatelessWidget {
               child: progressContent,
             ),
           ),
-          SizedBox(height: isCompactWidth ? 6 : 8),
-          _buildNavigationRow(context),
         ],
       ),
     );

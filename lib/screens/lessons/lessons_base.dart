@@ -66,22 +66,22 @@ abstract class LessonsBaseState<T extends LessonsBase> extends State<T> {
       children: [
         ScalableText(
           'Lesson ${currentLessonIndex + 1} of ${lessons.length}',
-          minFontSize: isCompact ? 12 : 14,
-          maxFontSize: isCompact ? 18 : 20,
+          minFontSize: isCompact ? 11 : 13,
+          maxFontSize: isCompact ? 16 : 18,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
-        SizedBox(height: isCompact ? 8 : 12),
+        SizedBox(height: isCompact ? 6 : 8),
         LinearProgressIndicator(
           value: lessons.isEmpty
               ? 0
               : (currentLessonIndex + 1) / lessons.length.toDouble(),
           backgroundColor: AppColors.border,
           color: AppColors.primaryBlue,
-          minHeight: isCompact ? 6 : 10,
+          minHeight: isCompact ? 5 : 8,
           borderRadius: BorderRadius.circular(8),
         ),
         if (isCurrentAnswerCorrect != null) ...[
-          SizedBox(height: isCompact ? 10 : 14),
+          SizedBox(height: isCompact ? 8 : 10),
           DecoratedBox(
             decoration: BoxDecoration(
               color: isCurrentAnswerCorrect!
@@ -101,7 +101,7 @@ abstract class LessonsBaseState<T extends LessonsBase> extends State<T> {
               ],
             ),
             child: Padding(
-              padding: EdgeInsets.all(isCompact ? 10 : 12),
+              padding: EdgeInsets.all(isCompact ? 8 : 10),
               child: ScalableText(
                 isCurrentAnswerCorrect! ? 'Correct!' : 'Try again!',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -109,8 +109,8 @@ abstract class LessonsBaseState<T extends LessonsBase> extends State<T> {
                       ? AppColors.success
                       : AppColors.error,
                 ),
-                minFontSize: 14,
-                maxFontSize: 22,
+                minFontSize: 13,
+                maxFontSize: 20,
               ),
             ),
           ),

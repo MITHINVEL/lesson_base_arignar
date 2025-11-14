@@ -167,6 +167,7 @@ class _SimpleTaskState extends LessonsBaseState<SimpleTask> {
   Widget getQuestionCard() {
     final size = MediaQuery.of(context).size;
     final isCompact = size.width < 420;
+    final textScaleFactor = MediaQuery.textScalerOf(context).scale(1.0);
     final question =
         currentLesson?['question'] as String? ?? currentLesson?['word'] ?? '';
     final questionLength = question.length;
@@ -188,17 +189,17 @@ class _SimpleTaskState extends LessonsBaseState<SimpleTask> {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20 * textScaleFactor),
         boxShadow: [
           BoxShadow(
             color: AppColors.softShadow,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            blurRadius: 8 * textScaleFactor,
+            offset: Offset(0, 2 * textScaleFactor),
           ),
         ],
       ),
       child: Padding(
-        padding: EdgeInsets.all(isCompact ? 16 : 20),
+        padding: EdgeInsets.all((isCompact ? 16 : 20) * textScaleFactor),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
@@ -221,29 +222,29 @@ class _SimpleTaskState extends LessonsBaseState<SimpleTask> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8 * textScaleFactor),
                 Material(
                   color: Colors.transparent,
                   child: InkWell(
                     onTap: () {
                       // Audio playback functionality
                     },
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(20 * textScaleFactor),
                     child: Container(
-                      width: 32,
-                      height: 32,
+                      width: 32 * textScaleFactor,
+                      height: 32 * textScaleFactor,
                       alignment: Alignment.center,
                       child: Icon(
                         Icons.volume_up,
                         color: AppColors.audioIconRed,
-                        size: 24,
+                        size: 24 * textScaleFactor,
                       ),
                     ),
                   ),
                 ),
               ],
             ),
-            SizedBox(height: isCompact ? 12 : 16),
+            SizedBox(height: (isCompact ? 12 : 16) * textScaleFactor),
             // Answer options
             _buildAnswersWidget(),
           ],
@@ -268,7 +269,8 @@ class _SimpleTaskState extends LessonsBaseState<SimpleTask> {
       builder: (context, constraints) {
         final width = constraints.maxWidth;
         final isCompact = width < 380;
-        final double gap = isCompact ? 10 : 12;
+        final textScaleFactor = MediaQuery.textScalerOf(context).scale(1.0);
+        final double gap = (isCompact ? 10 : 12) * textScaleFactor;
 
         // Create rows of 2 columns with square boxes
         final List<Widget> rows = [];
@@ -279,7 +281,9 @@ class _SimpleTaskState extends LessonsBaseState<SimpleTask> {
           rowChildren.add(
             Expanded(
               child: ConstrainedBox(
-                constraints: BoxConstraints(maxHeight: isCompact ? 140 : 160),
+                constraints: BoxConstraints(
+                  maxHeight: (isCompact ? 140 : 160) * textScaleFactor,
+                ),
                 child: AspectRatio(aspectRatio: 1.0, child: getListofWords(i)),
               ),
             ),
@@ -295,7 +299,9 @@ class _SimpleTaskState extends LessonsBaseState<SimpleTask> {
             rowChildren.add(
               Expanded(
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(maxHeight: isCompact ? 140 : 160),
+                  constraints: BoxConstraints(
+                    maxHeight: (isCompact ? 140 : 160) * textScaleFactor,
+                  ),
                   child: AspectRatio(
                     aspectRatio: 1.0,
                     child: getListofWords(i + 1),
@@ -336,6 +342,7 @@ class _SimpleTaskState extends LessonsBaseState<SimpleTask> {
     final isSelected = selectedOptionIndex == index;
     final isCorrect = isSelected && isCurrentAnswerCorrect == true;
     final isIncorrect = isSelected && isCurrentAnswerCorrect == false;
+    final textScaleFactor = MediaQuery.textScalerOf(context).scale(1.0);
 
     // Get option image if available (for future enhancement)
     // For now, use question image or placeholder
@@ -347,8 +354,8 @@ class _SimpleTaskState extends LessonsBaseState<SimpleTask> {
     List<BoxShadow> shadows = [
       BoxShadow(
         color: AppColors.softShadow,
-        blurRadius: 8,
-        offset: const Offset(0, 2),
+        blurRadius: 8 * textScaleFactor,
+        offset: Offset(0, 2 * textScaleFactor),
       ),
     ];
 
@@ -357,8 +364,8 @@ class _SimpleTaskState extends LessonsBaseState<SimpleTask> {
       shadows = [
         BoxShadow(
           color: AppColors.success.withOpacity(0.3),
-          blurRadius: 12,
-          offset: const Offset(0, 4),
+          blurRadius: 12 * textScaleFactor,
+          offset: Offset(0, 4 * textScaleFactor),
         ),
       ];
     } else if (isIncorrect) {
@@ -366,8 +373,8 @@ class _SimpleTaskState extends LessonsBaseState<SimpleTask> {
       shadows = [
         BoxShadow(
           color: AppColors.error.withOpacity(0.2),
-          blurRadius: 8,
-          offset: const Offset(0, 2),
+          blurRadius: 8 * textScaleFactor,
+          offset: Offset(0, 2 * textScaleFactor),
         ),
       ];
     } else if (isSelected) {
@@ -375,8 +382,8 @@ class _SimpleTaskState extends LessonsBaseState<SimpleTask> {
       shadows = [
         BoxShadow(
           color: AppColors.headerOrange.withOpacity(0.25),
-          blurRadius: 10,
-          offset: const Offset(0, 3),
+          blurRadius: 10 * textScaleFactor,
+          offset: Offset(0, 3 * textScaleFactor),
         ),
       ];
     }
@@ -386,8 +393,11 @@ class _SimpleTaskState extends LessonsBaseState<SimpleTask> {
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: borderColor, width: isSelected ? 2 : 1.5),
+          borderRadius: BorderRadius.circular(20 * textScaleFactor),
+          border: Border.all(
+            color: borderColor,
+            width: (isSelected ? 2 : 1.5) * textScaleFactor,
+          ),
           boxShadow: shadows,
         ),
         child: Column(
@@ -398,9 +408,9 @@ class _SimpleTaskState extends LessonsBaseState<SimpleTask> {
             Flexible(
               flex: 3,
               child: ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20 * textScaleFactor),
+                  topRight: Radius.circular(20 * textScaleFactor),
                 ),
                 child: Container(
                   width: double.infinity,
@@ -412,10 +422,10 @@ class _SimpleTaskState extends LessonsBaseState<SimpleTask> {
                           errorBuilder: (context, error, stackTrace) {
                             return Container(
                               alignment: Alignment.center,
-                              padding: const EdgeInsets.all(8),
+                              padding: EdgeInsets.all(8 * textScaleFactor),
                               child: Icon(
                                 Icons.image_not_supported,
-                                size: 32,
+                                size: 32 * textScaleFactor,
                                 color: AppColors.border,
                               ),
                             );
@@ -424,12 +434,12 @@ class _SimpleTaskState extends LessonsBaseState<SimpleTask> {
                             if (loadingProgress == null) return child;
                             return Container(
                               alignment: Alignment.center,
-                              padding: const EdgeInsets.all(8),
+                              padding: EdgeInsets.all(8 * textScaleFactor),
                               child: SizedBox(
-                                width: 24,
-                                height: 24,
+                                width: 24 * textScaleFactor,
+                                height: 24 * textScaleFactor,
                                 child: CircularProgressIndicator(
-                                  strokeWidth: 2,
+                                  strokeWidth: 2 * textScaleFactor,
                                   color: AppColors.progressRed,
                                   value:
                                       loadingProgress.expectedTotalBytes != null
@@ -443,10 +453,10 @@ class _SimpleTaskState extends LessonsBaseState<SimpleTask> {
                         )
                       : Container(
                           alignment: Alignment.center,
-                          padding: const EdgeInsets.all(8),
+                          padding: EdgeInsets.all(8 * textScaleFactor),
                           child: Icon(
                             Icons.image,
-                            size: 32,
+                            size: 32 * textScaleFactor,
                             color: AppColors.border,
                           ),
                         ),
@@ -455,11 +465,14 @@ class _SimpleTaskState extends LessonsBaseState<SimpleTask> {
             ),
             // Text label - compact
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              padding: EdgeInsets.symmetric(
+                horizontal: 8 * textScaleFactor,
+                vertical: 8 * textScaleFactor,
+              ),
               child: Text(
                 word,
                 style: AppTextStyles.bodyMedium(context).copyWith(
-                  fontSize: 14,
+                  fontSize: 14 * textScaleFactor,
                   fontWeight: FontWeight.w500,
                   color: AppColors.darkText,
                 ),

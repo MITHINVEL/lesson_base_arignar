@@ -57,9 +57,14 @@ class ResponsiveBuilder extends StatelessWidget {
   }
 
   ResponsiveBreakpoint _resolveBreakpoint(double width) {
-    if (width < 768) return ResponsiveBreakpoint.mobile;
-    if (width < 1200) return ResponsiveBreakpoint.tablet;
-    return ResponsiveBreakpoint.desktop;
+    // Enhanced breakpoints for zoom support
+    // 1366px @ 150% zoom = ~911px effective viewport
+    if (width < 480) return ResponsiveBreakpoint.mobile; // Very small
+    if (width < 768) return ResponsiveBreakpoint.mobile; // Mobile
+    if (width < 1024) return ResponsiveBreakpoint.tablet; // Tablet/Small laptop
+    if (width < 1440)
+      return ResponsiveBreakpoint.desktop; // Desktop/1366px+zoom
+    return ResponsiveBreakpoint.desktop; // Large desktop
   }
 }
 

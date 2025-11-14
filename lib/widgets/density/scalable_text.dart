@@ -45,14 +45,19 @@ class ScalableText extends StatelessWidget {
 
     final media = MediaQuery.maybeOf(context);
     final width = media?.size.width ?? 1024.0;
+    // Enhanced width range to handle zoom scenarios
     const minWidth = 320.0;
-    const maxWidth = 1440.0;
+    const maxWidth = 1600.0; // Support larger viewports
 
-    final minSize = minFontSize ?? (baseStyle.fontSize ?? 16) * 0.85;
-    final maxSize = maxFontSize ?? (baseStyle.fontSize ?? 16) * 1.35;
+    // Improved font size calculation for zoom scenarios
+    final baseFont = baseStyle.fontSize ?? 16;
+    final minSize = minFontSize ?? (baseFont * 0.80).clamp(12.0, baseFont);
+    final maxSize = maxFontSize ?? (baseFont * 1.40).clamp(baseFont, 32.0);
 
-    final clampFactor =
-        ((width - minWidth) / (maxWidth - minWidth)).clamp(0.0, 1.0);
+    final clampFactor = ((width - minWidth) / (maxWidth - minWidth)).clamp(
+      0.0,
+      1.0,
+    );
     final fontSize = lerpDouble(minSize, maxSize, clampFactor)!;
 
     final scaledStyle = baseStyle.copyWith(fontSize: fontSize);
@@ -68,7 +73,3 @@ class ScalableText extends StatelessWidget {
     );
   }
 }
-
-
-
-

@@ -33,8 +33,14 @@ class AdaptiveLessonLayout extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
+    final textScaleFactor = MediaQuery.textScalerOf(context).scale(1.0);
     return Padding(
-      padding: const EdgeInsets.only(top: 12, left: 16, right: 16, bottom: 8),
+      padding: EdgeInsets.only(
+        top: 8 * textScaleFactor,
+        left: 12 * textScaleFactor,
+        right: 12 * textScaleFactor,
+        bottom: 6 * textScaleFactor,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
@@ -45,25 +51,24 @@ class AdaptiveLessonLayout extends StatelessWidget {
               Expanded(
                 child: ScalableText(
                   lessonTitle,
-                  style: AppTextStyles.headlineMedium(context).copyWith(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: AppTextStyles.headlineMedium(
+                    context,
+                  ).copyWith(fontSize: 18, fontWeight: FontWeight.w600),
                   maxFontSize: 20,
                   minFontSize: 16,
                   textAlign: TextAlign.center,
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8 * textScaleFactor),
               AppButton(
                 label: 'Exit',
                 onPressed: onExitPressed,
                 expanded: false,
-                height: 36,
+                height: 36 * textScaleFactor,
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 6 * textScaleFactor),
           progressContent,
         ],
       ),
@@ -73,30 +78,29 @@ class AdaptiveLessonLayout extends StatelessWidget {
   Widget _buildMobileLayout(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final screenHeight = constraints.maxHeight;
         final screenWidth = constraints.maxWidth;
         final isCompact = screenWidth < 420;
+        final textScaleFactor = MediaQuery.textScalerOf(context).scale(1.0);
 
         return Column(
           children: [
             // Header with title and progress bar
-            _buildHeader(context),
+            Flexible(flex: 0, child: _buildHeader(context)),
 
             // Main content area
             Expanded(
               child: SingleChildScrollView(
-                padding: EdgeInsets.only(
-                  left: isCompact ? 16 : 20,
-                  right: isCompact ? 16 : 20,
-                  top: 8,
-                  bottom: 8,
+                padding: EdgeInsets.symmetric(
+                  horizontal: (isCompact ? 12 : 16) * textScaleFactor,
+                  vertical: 4 * textScaleFactor,
                 ),
                 physics: const ClampingScrollPhysics(),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     questionCard,
-                    const SizedBox(height: 8),
+                    SizedBox(height: 4 * textScaleFactor),
                     // Show mainContent if it exists
                     if (!(mainContent is SizedBox &&
                         (mainContent as SizedBox).width == 0.0 &&
@@ -104,24 +108,28 @@ class AdaptiveLessonLayout extends StatelessWidget {
                       DecoratedBox(
                         decoration: BoxDecoration(
                           color: AppColors.white,
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(
+                            16 * textScaleFactor,
+                          ),
                         ),
                         child: Padding(
-                          padding: EdgeInsets.all(isCompact ? 12 : 16),
+                          padding: EdgeInsets.all(
+                            (isCompact ? 8 : 12) * textScaleFactor,
+                          ),
                           child: mainContent,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 4 * textScaleFactor),
                     ],
                     // Add spacing for bottom navigation
-                    const SizedBox(height: 70),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.06),
                   ],
                 ),
               ),
             ),
 
             // Bottom navigation with icon buttons
-            _buildBottomNavigation(context),
+            Flexible(flex: 0, child: _buildBottomNavigation(context)),
           ],
         );
       },
@@ -129,55 +137,114 @@ class AdaptiveLessonLayout extends StatelessWidget {
   }
 
   Widget _buildBottomNavigation(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      decoration: BoxDecoration(
-        color: AppColors.lightYellowBackground,
-        border: Border(
-          top: BorderSide(
-            color: AppColors.border.withOpacity(0.3),
-            width: 1,
+    return LayoutBuilder(
+      builder: (context, navConstraints) {
+        final screenWidth = navConstraints.maxWidth;
+        final screenHeight = navConstraints.maxHeight;
+        final textScaleFactor = MediaQuery.textScalerOf(context).scale(1.0);
+
+        // Calculate button size based on both width and height with text scaling
+        final buttonSize = (screenWidth * 0.07 * textScaleFactor).clamp(
+          32.0,
+          44.0 * textScaleFactor,
+        );
+        final navPadding = (screenWidth * 0.02 * textScaleFactor).clamp(
+          8.0,
+          16.0 * textScaleFactor,
+        );
+        final verticalPadding = (screenHeight * 0.008 * textScaleFactor).clamp(
+          4.0,
+          10.0 * textScaleFactor,
+        );
+
+        return SafeArea(
+          child: Container(
+            width: screenWidth,
+            padding: EdgeInsets.symmetric(
+              horizontal: navPadding,
+              vertical: verticalPadding,
+            ),
+            decoration: BoxDecoration(
+              color: AppColors.lightYellowBackground,
+              border: Border(
+                top: BorderSide(
+                  color: AppColors.border.withOpacity(0.3),
+                  width: 0.8,
+                ),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Expanded(
+                  child: Center(
+                    child: _buildIconButton(
+                      context: context,
+                      icon: Icons.home,
+                      onPressed: onExitPressed,
+                      size: buttonSize,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Center(
+                    child: _buildIconButton(
+                      context: context,
+                      icon: Icons.arrow_back,
+                      onPressed: onPrevPressed,
+                      size: buttonSize,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Center(
+                    child: _buildIconButton(
+                      context: context,
+                      icon: Icons.arrow_forward,
+                      onPressed: onNextPressed,
+                      size: buttonSize,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildIconButton(
-            icon: Icons.home,
-            onPressed: onExitPressed,
-          ),
-          _buildIconButton(
-            icon: Icons.arrow_back,
-            onPressed: onPrevPressed,
-          ),
-          _buildIconButton(
-            icon: Icons.arrow_forward,
-            onPressed: onNextPressed,
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
   Widget _buildIconButton({
+    required BuildContext context,
     required IconData icon,
     required VoidCallback? onPressed,
+    required double size,
   }) {
+    final textScaleFactor = MediaQuery.textScalerOf(context).scale(1.0);
     return Material(
       color: AppColors.headerOrange,
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(size * 0.2),
       child: InkWell(
         onTap: onPressed,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(size * 0.2),
         child: Container(
-          width: 40,
-          height: 40,
+          width: size,
+          height: size,
+          constraints: BoxConstraints(
+            minWidth: 32 * textScaleFactor,
+            minHeight: 32 * textScaleFactor,
+            maxWidth: 48 * textScaleFactor,
+            maxHeight: 48 * textScaleFactor,
+          ),
           alignment: Alignment.center,
           child: Icon(
             icon,
             color: AppColors.white,
-            size: 24,
+            size: (size * 0.45 * textScaleFactor).clamp(
+              14.0 * textScaleFactor,
+              22.0 * textScaleFactor,
+            ),
           ),
         ),
       ),

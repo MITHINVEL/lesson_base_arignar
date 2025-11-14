@@ -26,44 +26,52 @@ class QuizHeader extends StatelessWidget {
     // PRODUCTION-SAFE: Auto-scale factors for extremely small screens
     double fontScale = 1.0;
     double spacingScale = 1.0;
-    
+
     if (screenWidth < 350) {
       fontScale = (screenWidth / 350).clamp(0.75, 1.0);
       spacingScale = (screenWidth / 350).clamp(0.6, 1.0);
     }
 
     // Safe padding with minimum constraints
-    final horizontalPadding = ((screenWidth < 400
-        ? 16.0
-        : screenWidth < 600
-        ? 20.0
-        : screenWidth < 900
-        ? 24.0
-        : screenWidth < 1400
-        ? 28.0
-        : 32.0) * spacingScale).clamp(8.0, 50.0);
+    final horizontalPadding =
+        ((screenWidth < 400
+                    ? 16.0
+                    : screenWidth < 600
+                    ? 20.0
+                    : screenWidth < 900
+                    ? 24.0
+                    : screenWidth < 1400
+                    ? 28.0
+                    : 32.0) *
+                spacingScale)
+            .clamp(8.0, 50.0);
 
     // Very compact vertical spacing with overflow protection
-    final verticalPadding = ((screenWidth < 400
-        ? 6.0
-        : screenWidth < 600
-        ? 8.0
-        : screenWidth < 900
-        ? 10.0
-        : screenWidth < 1400
-        ? 12.0
-        : 14.0) * spacingScale).clamp(4.0, 20.0);
+    final verticalPadding =
+        ((screenWidth < 400
+                    ? 6.0
+                    : screenWidth < 600
+                    ? 8.0
+                    : screenWidth < 900
+                    ? 10.0
+                    : screenWidth < 1400
+                    ? 12.0
+                    : 14.0) *
+                spacingScale)
+            .clamp(4.0, 20.0);
 
     // Slim modern progress bar height with safe minimum
-    final progressHeight = (screenWidth < 400
-        ? 4.0 // Mobile: ultra-slim
-        : screenWidth < 600
-        ? 4.5 // Tablet: slim
-        : screenWidth < 900
-        ? 5.0 // Laptop: moderate
-        : screenWidth < 1400
-        ? 5.5 // Desktop: slightly thicker
-        : 6.0).clamp(3.0, 8.0); // Safe bounds
+    final progressHeight =
+        (screenWidth < 400
+                ? 4.0 // Mobile: ultra-slim
+                : screenWidth < 600
+                ? 4.5 // Tablet: slim
+                : screenWidth < 900
+                ? 5.0 // Laptop: moderate
+                : screenWidth < 1400
+                ? 5.5 // Desktop: slightly thicker
+                : 6.0)
+            .clamp(3.0, 8.0); // Safe bounds
 
     // Responsive progress bar width
     final progressBarWidth = screenWidth < 600
@@ -73,15 +81,18 @@ class QuizHeader extends StatelessWidget {
         : 1.0; // Desktop: 100%
 
     // Element spacing for clean layout with safe scaling
-    final elementSpacing = ((screenWidth < 400
-        ? 12.0
-        : screenWidth < 600
-        ? 14.0
-        : screenWidth < 900
-        ? 16.0
-        : screenWidth < 1400
-        ? 18.0
-        : 20.0) * spacingScale).clamp(8.0, 30.0);
+    final elementSpacing =
+        ((screenWidth < 400
+                    ? 12.0
+                    : screenWidth < 600
+                    ? 14.0
+                    : screenWidth < 900
+                    ? 16.0
+                    : screenWidth < 1400
+                    ? 18.0
+                    : 20.0) *
+                spacingScale)
+            .clamp(8.0, 30.0);
 
     return Container(
       width: double.infinity,
@@ -113,26 +124,33 @@ class QuizHeader extends StatelessWidget {
                   style: AppTextStyles.bodyMedium(context).copyWith(
                     fontWeight: FontWeight.w600,
                     color: AppColors.darkText,
-                    fontSize: ((screenWidth < 400
-                        ? 13
-                        : screenWidth < 600
-                        ? 14
-                        : screenWidth < 900
-                        ? 15
-                        : screenWidth < 1400
-                        ? 16
-                        : 17) * fontScale).clamp(10.0, 20.0),
+                    fontSize:
+                        ((screenWidth < 400
+                                    ? 13
+                                    : screenWidth < 600
+                                    ? 14
+                                    : screenWidth < 900
+                                    ? 15
+                                    : screenWidth < 1400
+                                    ? 16
+                                    : 17) *
+                                fontScale)
+                            .clamp(10.0, 20.0),
                   ),
                   autoScale: false,
                 ),
               ),
 
-              // Center: Slim gradient progress bar with flex protection
+              // Center: Slim gradient progress bar - Full width for better appearance
               Expanded(
-                flex: 2,
+                flex: 3, // Give more space to progress bar
                 child: Container(
-                  margin: EdgeInsets.symmetric(horizontal: elementSpacing),
-                  constraints: const BoxConstraints(minWidth: 60.0),
+                  margin: EdgeInsets.symmetric(
+                    horizontal: elementSpacing * 0.5,
+                  ), // Reduced margin
+                  constraints: const BoxConstraints(
+                    minWidth: 80.0,
+                  ), // Increased minimum
                   child: _buildSlimProgressBar(progressHeight),
                 ),
               ),
@@ -144,15 +162,18 @@ class QuizHeader extends StatelessWidget {
                   style: AppTextStyles.bodyMedium(context).copyWith(
                     fontWeight: FontWeight.w600,
                     color: AppColors.darkText,
-                    fontSize: ((screenWidth < 400
-                        ? 13
-                        : screenWidth < 600
-                        ? 14
-                        : screenWidth < 900
-                        ? 15
-                        : screenWidth < 1400
-                        ? 16
-                        : 17) * fontScale).clamp(10.0, 20.0),
+                    fontSize:
+                        ((screenWidth < 400
+                                    ? 13
+                                    : screenWidth < 600
+                                    ? 14
+                                    : screenWidth < 900
+                                    ? 15
+                                    : screenWidth < 1400
+                                    ? 16
+                                    : 17) *
+                                fontScale)
+                            .clamp(10.0, 20.0),
                   ),
                   autoScale: false,
                 ),
@@ -171,15 +192,18 @@ class QuizHeader extends StatelessWidget {
                 style: AppTextStyles.headlineMedium(context).copyWith(
                   fontWeight: FontWeight.w600,
                   color: AppColors.darkText,
-                  fontSize: ((screenWidth < 400
-                      ? 16
-                      : screenWidth < 600
-                      ? 18
-                      : screenWidth < 900
-                      ? 20
-                      : screenWidth < 1400
-                      ? 22
-                      : 24) * fontScale).clamp(12.0, 28.0),
+                  fontSize:
+                      ((screenWidth < 400
+                                  ? 16
+                                  : screenWidth < 600
+                                  ? 18
+                                  : screenWidth < 900
+                                  ? 20
+                                  : screenWidth < 1400
+                                  ? 22
+                                  : 24) *
+                              fontScale)
+                          .clamp(12.0, 28.0),
                   height: 1.2,
                 ),
                 textAlign: TextAlign.center,

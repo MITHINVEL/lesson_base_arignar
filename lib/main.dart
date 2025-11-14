@@ -7,6 +7,8 @@ import 'package:lesson_base_arignar/widgets/question_container.dart';
 import 'package:lesson_base_arignar/widgets/quiz_image.dart';
 import 'package:lesson_base_arignar/widgets/quiz_options.dart';
 import 'package:lesson_base_arignar/widgets/quiz_bottom_bar.dart';
+import 'responsive/responsive.dart';
+import 'dart:math' as math;
 
 void main() {
   runApp(const LessonBaseApp());
@@ -69,66 +71,44 @@ class SimpleTaskWrapper extends StatelessWidget {
         final screenWidth = constraints.maxWidth;
         final screenHeight = constraints.maxHeight;
 
-        // PRODUCTION-SAFE: Check minimum layout requirements
-        const minWidth = 300.0;
-        const minHeight = 500.0;
-        
-        // If screen is too small, show fallback message
-        if (screenWidth < minWidth || screenHeight < minHeight) {
-          return Scaffold(
-            backgroundColor: const Color(0xFFFAF8EF),
-            body: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  'Screen size too small to display content.',
-                  style: TextStyle(
-                    fontSize: (screenWidth * 0.04).clamp(12.0, 18.0),
-                    color: const Color(0xFF424242),
-                    fontWeight: FontWeight.w500,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-          );
+        // FULL FLEX SHRINK MODE - NO FALLBACKS, ALWAYS RENDER
+        // Calculate adaptive scaling for ANY screen size and zoom level
+
+        // Base reference dimensions (never used as minimums)
+        const baseWidth = 400.0;
+        const baseHeight = 600.0;
+
+        // Calculate shrink factors for extreme zoom scenarios
+        final widthShrinkFactor = (screenWidth / baseWidth).clamp(0.3, 2.0);
+        final heightShrinkFactor = (screenHeight / baseHeight).clamp(0.3, 2.0);
+
+        // Use the smaller factor to ensure content always fits
+        final adaptiveScale = math.min(widthShrinkFactor, heightShrinkFactor);
+
+        // Force-fit scaling for extreme zoom (200%+ browser zoom)
+        double extremeZoomScale = 1.0;
+        if (adaptiveScale < 0.6) {
+          // Extreme zoom detected - apply aggressive shrinking
+          extremeZoomScale = 0.6; // Reduce by up to 40%
+        } else if (adaptiveScale < 0.8) {
+          // High zoom detected - apply moderate shrinking
+          extremeZoomScale = 0.8; // Reduce by up to 20%
         }
 
-        // RESPONSIVE AUTO-SCALE: Calculate scale factor for small screens
-        double scaleFactor = 1.0;
-        if (screenWidth < 400 || screenHeight < 600) {
-          scaleFactor = (screenWidth / 400).clamp(0.7, 1.0);
-        }
-
-        // Enhanced responsive width calculation with safe constraints
-        double targetWidth;
-        if (screenWidth < 400) {
-          // Very small screens with auto-scaling
-          targetWidth = (screenWidth * 0.95).clamp(minWidth, 380.0);
-        } else if (screenWidth < 600) {
-          // Mobile screens
-          targetWidth = screenWidth.clamp(380.0, 500.0);
-        } else if (screenWidth < 900) {
-          // Tablet/Zoomed desktop (includes 1366px @ 150% zoom = ~911px)
-          targetWidth = screenWidth.clamp(500.0, 720.0);
-        } else if (screenWidth < 1200) {
-          // Desktop/Laptop
-          targetWidth = screenWidth.clamp(600.0, 800.0);
-        } else {
-          // Large desktop
-          targetWidth = screenWidth.clamp(700.0, 900.0);
-        }
+        // RESPONSIVE WIDTH - ALWAYS use available space, never clamp to minimums
+        final targetWidth = screenWidth * 0.95; // Use 95% of available width
 
         return SizedBox(
           width: targetWidth,
           height: constraints.maxHeight,
           child: Transform.scale(
-            scale: scaleFactor,
+            scale: extremeZoomScale,
             child: _EmbeddedAwareSimpleTask(
               onReady: () {},
               chapterID: 'chapter-001',
               lessonID: 'lesson-001',
-              onLessonComplete: () => _showSnackBar(context, 'Lesson Complete!'),
+              onLessonComplete: () =>
+                  _showSnackBar(context, 'Lesson Complete!'),
               onExitPressed: () => _showSnackBar(context, 'Exit tapped'),
               onJumpToQuestion: () =>
                   _showSnackBar(context, 'Jump to Question tapped'),
@@ -242,7 +222,332 @@ class _EmbeddedAwareSimpleTaskState extends State<_EmbeddedAwareSimpleTask> {
       isCurrentAnswerCorrect = index == (currentLesson!['correctIndex'] as int);
     });
 
-    // No auto-advance - user must click Next button
+    // Show feedback popup after selection
+    _showAnswerFeedback(index);
+  }
+
+  // Show device-adaptive answer feedback
+  void _showAnswerFeedback(int selectedIndex) {
+    final isCorrect = selectedIndex == (currentLesson!['correctIndex'] as int);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 600;
+
+    if (isMobile) {
+      _showMobileFeedback(isCorrect, selectedIndex);
+    } else {
+      _showDesktopFeedback(isCorrect, selectedIndex);
+    }
+  }
+
+  // Mobile bottom-sheet style feedback
+  void _showMobileFeedback(bool isCorrect, int selectedIndex) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isDismissible: true, // Allow dismissal by tapping outside
+      enableDrag: true, // Enable drag to dismiss
+      isScrollControlled: true, // Prevent overflow
+      useSafeArea: true, // Ensure safe area handling
+      builder: (context) => SafeArea(
+        child: Container(
+          width: double.infinity,
+          constraints: BoxConstraints(
+            maxHeight:
+                MediaQuery.of(context).size.height * 0.5, // Reduced max height
+            minHeight:
+                MediaQuery.of(context).size.height * 0.3, // Reduced min height
+          ),
+          decoration: const BoxDecoration(
+            color: Color(0xFFFAF8EF),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(28),
+              topRight: Radius.circular(28),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Color(0x30000000),
+                blurRadius: 25,
+                offset: Offset(0, -6),
+                spreadRadius: 3,
+              ),
+            ],
+          ),
+          child: SingleChildScrollView(
+            child: _buildFeedbackContent(isCorrect, selectedIndex, true),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Desktop centered dialog feedback
+  void _showDesktopFeedback(bool isCorrect, int selectedIndex) {
+    showDialog(
+      context: context,
+      barrierDismissible: true, // Allow dismissal by clicking outside
+      barrierColor: Colors.black.withOpacity(0.6),
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.35, // Reduced width
+            minWidth: 300, // Reduced min width
+            maxHeight:
+                MediaQuery.of(context).size.height * 0.6, // Reduced height
+          ),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFAF8EF),
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 30,
+                offset: const Offset(0, 10),
+                spreadRadius: 5,
+              ),
+            ],
+          ),
+          child: SingleChildScrollView(
+            child: _buildFeedbackContent(isCorrect, selectedIndex, false),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Build feedback content for both mobile and desktop with zoom-aware scaling
+  Widget _buildFeedbackContent(
+    bool isCorrect,
+    int selectedIndex,
+    bool isMobile,
+  ) {
+    final correctOption =
+        currentLesson!['options'][currentLesson!['correctIndex']] as String;
+
+    // Get zoom scaling factor
+    final media = MediaQuery.of(context);
+    final devicePixelRatio = media.devicePixelRatio;
+    final screenWidth = media.size.width;
+
+    // Calculate controlled zoom scaling (very subtle)
+    double zoomScale = 1.0;
+    if (screenWidth < 1366 && devicePixelRatio > 1.0) {
+      // Estimate zoom level from viewport reduction
+      final estimatedZoom = (1366 / screenWidth).clamp(1.0, 3.0);
+      // Apply extremely controlled scaling (max 6% increase)
+      zoomScale = 1.0 + ((estimatedZoom - 1.0) * 0.06);
+    }
+
+    // Apply subtle scaling to dimensions
+    final scaledPadding = ((isMobile ? 20.0 : 24.0) * zoomScale).clamp(
+      16.0,
+      32.0,
+    );
+    final scaledIconSize = ((isMobile ? 80 : 90) * zoomScale).clamp(
+      60.0,
+      120.0,
+    );
+    final scaledSpacing = (24.0 * zoomScale).clamp(16.0, 32.0);
+    final scaledButtonHeight = ((isMobile ? 52 : 56) * zoomScale).clamp(
+      44.0,
+      72.0,
+    );
+    final scaledBorderRadius = (16.0 * zoomScale).clamp(12.0, 24.0);
+
+    return Container(
+      padding: EdgeInsets.all(scaledPadding),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Close indicator for mobile (visual only) with zoom scaling
+          if (isMobile)
+            Container(
+              width: 40 * zoomScale,
+              height: 4 * zoomScale,
+              margin: EdgeInsets.only(bottom: scaledSpacing),
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2 * zoomScale),
+              ),
+            ),
+
+          // Feedback icon with zoom-aware sizing
+          Container(
+            width: scaledIconSize,
+            height: scaledIconSize,
+            decoration: BoxDecoration(
+              color: isCorrect
+                  ? const Color(0xFF4CAF50).withOpacity(0.15)
+                  : const Color(0xFFE53935).withOpacity(0.15),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: isCorrect
+                      ? const Color(0xFF4CAF50).withOpacity(0.3)
+                      : const Color(0xFFE53935).withOpacity(0.3),
+                  blurRadius: 15,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Icon(
+              isCorrect ? Icons.check_circle_rounded : Icons.error_rounded,
+              color: isCorrect
+                  ? const Color(0xFF43A047)
+                  : const Color(0xFFD32F2F),
+              size: isMobile ? 40 : 45,
+            ),
+          ),
+
+          SizedBox(height: isMobile ? 20 : 24),
+
+          // Feedback title with zoom-aware typography
+          Text(
+            isCorrect
+                ? _getRandomCorrectMessage()
+                : 'Oops! That\'s not correct.',
+            style: TextStyle(
+              fontSize: ((isMobile ? 26 : 28) * zoomScale).clamp(20.0, 36.0),
+              fontWeight: FontWeight.bold,
+              color: isCorrect
+                  ? const Color(0xFF43A047)
+                  : const Color(0xFFD32F2F),
+              letterSpacing: 0.5,
+            ),
+            textAlign: TextAlign.center,
+          ),
+
+          if (!isCorrect) ...[
+            SizedBox(height: scaledSpacing * 0.8),
+
+            // Correct answer label with zoom-aware font
+            Text(
+              'Correct answer is:',
+              style: TextStyle(
+                fontSize: ((isMobile ? 16 : 18) * zoomScale).clamp(14.0, 24.0),
+                color: const Color(0xFF757575),
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+
+            SizedBox(height: isMobile ? 12 : 16),
+
+            // Highlighted correct answer with beautiful container
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(
+                horizontal: isMobile ? 20 : 24,
+                vertical: isMobile ? 16 : 20,
+              ),
+              decoration: BoxDecoration(
+                color: const Color(0xFF4CAF50).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: const Color(0xFF4CAF50).withOpacity(0.3),
+                  width: 2,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF4CAF50).withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Text(
+                correctOption,
+                style: TextStyle(
+                  fontSize: ((isMobile ? 15 : 16) * zoomScale).clamp(
+                    13.0,
+                    20.0,
+                  ),
+                  color: const Color(0xFF43A047),
+                  fontWeight: FontWeight.w600,
+                  height: 1.4,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+
+          SizedBox(height: isMobile ? 24 : 28),
+
+          // Beautiful Continue button - Color based on answer correctness
+          Container(
+            width: double.infinity,
+            height: isMobile ? 52 : 56,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: isCorrect
+                    ? [
+                        const Color(0xFF4CAF50), // Green for correct
+                        const Color(0xFF43A047),
+                      ]
+                    : [
+                        const Color(0xFFE53935), // Red for wrong
+                        const Color(0xFFD32F2F),
+                      ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: isCorrect
+                      ? const Color(0xFF4CAF50).withOpacity(0.4)
+                      : const Color(0xFFE53935).withOpacity(0.4),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () {
+                  Navigator.pop(context);
+                  // Auto-advance to next question after Continue is tapped
+                  _nextQuestion();
+                },
+                borderRadius: BorderRadius.circular(16),
+                child: Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  alignment: Alignment.center,
+                  child: Text(
+                    'Continue',
+                    style: TextStyle(
+                      fontSize: isMobile ? 18 : 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // Add bottom safe area padding for mobile
+          if (isMobile)
+            SizedBox(height: MediaQuery.of(context).padding.bottom + 8),
+        ],
+      ),
+    );
+  }
+
+  // Get random motivational message for correct answers
+  String _getRandomCorrectMessage() {
+    final messages = [
+      'Well done!',
+      'Great job!',
+      'Wow!',
+      'Super!',
+      'Excellent!',
+      'Amazing!',
+    ];
+    return messages[(DateTime.now().millisecond) % messages.length];
   }
 
   void _nextQuestion() {
@@ -282,64 +587,79 @@ class _EmbeddedAwareSimpleTaskState extends State<_EmbeddedAwareSimpleTask> {
       );
     }
 
-    final media = MediaQuery.of(context);
-    final screenWidth = media.size.width;
-
-    final verticalSpacing = (screenWidth * 0.025).clamp(10.0, 16.0);
-    final horizontalPadding = (screenWidth * 0.025).clamp(8.0, 16.0);
-
-    return Scaffold(
-      backgroundColor: const Color(0xFFFAF8EF),
-      body: SafeArea(
-        child: Column(
-          children: [
-            QuizHeader(
-              currentQuestion: currentLessonIndex + 1,
-              totalQuestions: lessons.length,
-              progressPercentage:
-                  ((currentLessonIndex + 1) / lessons.length) * 100,
-              title: currentLesson?['title'] ?? '',
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(
-                  horizontal: horizontalPadding,
-                  vertical: verticalSpacing,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    QuestionContainer(
-                      question: currentLesson?['question'] ?? '',
-                      onSpeakerTap: () {},
-                    ),
-                    SizedBox(height: verticalSpacing),
-                    if (currentLesson?['image'] != null) ...[
-                      QuizImage(imageUrl: currentLesson!['image'] as String),
-                      SizedBox(height: verticalSpacing),
-                    ],
-                    if (currentLesson?['options'] != null)
-                      QuizOptions(
-                        options: List<String>.from(currentLesson!['options']),
-                        selectedIndex: selectedOptionIndex,
-                        onOptionSelected: _onOptionSelected,
+    return ResponsiveBuilder(
+      builder: (context, responsive) {
+        // FULL FLEX SHRINK MODE - Apply extreme zoom adaptations
+        return Transform.scale(
+          scale: responsive.customScaleFactor,
+          child: Scaffold(
+            backgroundColor: const Color(0xFFFAF8EF),
+            body: SafeArea(
+              child: Column(
+                children: [
+                  // Header with automatic compact mode
+                  QuizHeader(
+                    currentQuestion: currentLessonIndex + 1,
+                    totalQuestions: lessons.length,
+                    progressPercentage:
+                        ((currentLessonIndex + 1) / lessons.length) * 100,
+                    title: currentLesson?['title'] ?? '',
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      // Adaptive padding based on zoom level
+                      padding: responsive.isCompactMode
+                          ? const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 8,
+                            ) // Ultra-tight for extreme zoom
+                          : const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 16,
+                            ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          QuestionContainer(
+                            question: currentLesson?['question'] ?? '',
+                            onSpeakerTap: () {},
+                          ),
+                          SizedBox(height: responsive.scaleSpacing(16)),
+                          if (currentLesson?['image'] != null) ...[
+                            QuizImage(
+                              imageUrl: currentLesson!['image'] as String,
+                            ),
+                            SizedBox(height: responsive.scaleSpacing(16)),
+                          ],
+                          if (currentLesson?['options'] != null)
+                            QuizOptions(
+                              options: List<String>.from(
+                                currentLesson!['options'],
+                              ),
+                              selectedIndex: selectedOptionIndex,
+                              isAnswerCorrect: isCurrentAnswerCorrect,
+                              correctIndex:
+                                  currentLesson!['correctIndex'] as int,
+                              onOptionSelected: _onOptionSelected,
+                            ),
+                          SizedBox(height: responsive.scaleSpacing(20)),
+                        ],
                       ),
-                    // Extra bottom padding for navigation bar
-                    const SizedBox(height: 20),
-                  ],
-                ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: QuizBottomBar(
-        onHomePressed: widget.onExitPressed,
-        onBackPressed: _previousQuestion,
-        onNextPressed: _nextQuestion,
-        canGoBack: currentLessonIndex > 0,
-        canGoNext: selectedOptionIndex != null,
-      ),
+            bottomNavigationBar: QuizBottomBar(
+              onHomePressed: widget.onExitPressed,
+              onBackPressed: _previousQuestion,
+              onNextPressed: _nextQuestion,
+              canGoBack: currentLessonIndex > 0,
+              canGoNext: selectedOptionIndex != null,
+            ),
+          ),
+        );
+      },
     );
   }
 }

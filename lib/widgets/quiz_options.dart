@@ -8,11 +8,15 @@ class QuizOptions extends StatelessWidget {
     required this.options,
     required this.onOptionSelected,
     this.selectedIndex,
+    this.isAnswerCorrect,
+    this.correctIndex,
   });
 
   final List<String> options;
   final ValueChanged<int> onOptionSelected;
   final int? selectedIndex;
+  final bool? isAnswerCorrect;
+  final int? correctIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +27,7 @@ class QuizOptions extends StatelessWidget {
     // PRODUCTION-SAFE: Auto-scale factors for extremely small screens
     double fontScale = 1.0;
     double spacingScale = 1.0;
-    
+
     if (screenWidth < 350) {
       fontScale = (screenWidth / 350).clamp(0.7, 1.0);
       spacingScale = (screenWidth / 350).clamp(0.6, 1.0);
@@ -36,11 +40,15 @@ class QuizOptions extends StatelessWidget {
     // Responsive container width calculations with better medium-screen support and safe constraints
     double containerWidth;
     if (isMobile) {
-      containerWidth = (screenWidth * 0.90 * spacingScale).clamp(280.0, double.infinity);
+      containerWidth = (screenWidth * 0.90 * spacingScale).clamp(
+        280.0,
+        double.infinity,
+      );
     } else if (isTablet) {
       containerWidth = screenWidth * 0.75; // Tablet: 75% for balanced layout
     } else {
-      containerWidth = screenWidth * 0.60; // Desktop: 60% for optimal readability
+      containerWidth =
+          screenWidth * 0.60; // Desktop: 60% for optimal readability
     }
 
     // Grid configuration with proper medium-screen handling
@@ -108,40 +116,62 @@ class QuizOptions extends StatelessWidget {
           itemBuilder: (context, index) {
             final isSelected = selectedIndex == index;
 
+            // Determine feedback colors based on answer correctness
+            Color backgroundColor;
+            Color borderColor;
+            Color textColor;
+            Color shadowColor;
+
+            if (isSelected && isAnswerCorrect != null) {
+              // Answer has been provided - show feedback colors
+              if (isAnswerCorrect!) {
+                // Correct answer - luxury green
+                backgroundColor = const Color(0xFF4CAF50).withOpacity(0.1);
+                borderColor = const Color(0xFF43A047);
+                textColor = const Color(0xFF43A047);
+                shadowColor = const Color(0xFF4CAF50).withOpacity(0.2);
+              } else {
+                // Wrong answer - premium red
+                backgroundColor = const Color(0xFFE53935).withOpacity(0.1);
+                borderColor = const Color(0xFFD32F2F);
+                textColor = const Color(0xFFD32F2F);
+                shadowColor = const Color(0xFFE53935).withOpacity(0.2);
+              }
+            } else if (isSelected) {
+              // Selected but no feedback yet - default orange
+              backgroundColor = const Color(0xFFFFF3E0);
+              borderColor = const Color(0xFFFF8F00);
+              textColor = const Color(0xFFFF8F00);
+              shadowColor = const Color(0xFFFF8F00).withOpacity(0.15);
+            } else {
+              // Not selected - default white
+              backgroundColor = const Color(0xFFFFFFFF);
+              borderColor = Colors.transparent;
+              textColor = AppColors.darkText;
+              shadowColor = Colors.black.withOpacity(0.08);
+            }
+
             return Material(
               color: Colors.transparent,
               child: InkWell(
                 onTap: () => onOptionSelected(index),
                 borderRadius: BorderRadius.circular(borderRadius),
-                child: Container(
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeOut,
                   height: containerHeight,
                   constraints: BoxConstraints(
-                    minWidth: isMobile
-                        ? 250.0
-                        : 220.0, // Minimum width constraint
+                    minWidth: isMobile ? 250.0 : 220.0,
                     maxWidth: double.infinity,
                   ),
                   decoration: BoxDecoration(
-                    color: isSelected
-                        ? const Color(0xFFFFF3E0) // Light orange for selected
-                        : const Color(0xFFFFFFFF), // Pure white background
+                    color: backgroundColor,
                     borderRadius: BorderRadius.circular(borderRadius),
-                    border: Border.all(
-                      color: isSelected
-                          ? const Color(
-                              0xFFFF8F00,
-                            ) // Orange border for selected
-                          : Colors.transparent,
-                      width: 2,
-                    ),
+                    border: Border.all(color: borderColor, width: 2),
                     boxShadow: [
                       BoxShadow(
-                        color: isSelected
-                            ? const Color(0xFFFF8F00).withOpacity(0.15)
-                            : Colors.black.withOpacity(0.08), // Softer shadow
-                        blurRadius: isTablet
-                            ? 16
-                            : 12, // Enhanced blur for tablets
+                        color: shadowColor,
+                        blurRadius: isTablet ? 16 : 12,
                         offset: const Offset(0, 3),
                         spreadRadius: 0,
                       ),
@@ -159,13 +189,12 @@ class QuizOptions extends StatelessWidget {
                         fontWeight: isMobile
                             ? FontWeight.w500
                             : (isTablet ? FontWeight.w600 : FontWeight.w600),
-                        color: isSelected
-                            ? const Color(
-                                0xFFFF8F00,
-                              ) // Orange text for selected
-                            : AppColors.darkText,
+                        color: textColor, // Use dynamic text color for feedback
                         height: 1.4, // Premium line height
-                        fontSize: fontSize, // Responsive font sizing
+                        fontSize: (fontSize * fontScale).clamp(
+                          12.0,
+                          20.0,
+                        ), // Safe responsive sizing
                       ),
                       textAlign: TextAlign.left,
                       maxLines: null,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lesson_base_arignar/responsive/responsive.dart';
 
 class QuizBottomBar extends StatelessWidget {
   const QuizBottomBar({
@@ -18,73 +19,86 @@ class QuizBottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final media = MediaQuery.of(context);
-    final screenWidth = media.size.width;
+    return ResponsiveBuilder(
+      builder: (context, responsive) {
+        // Use physical screen width for zoom-independent calculations
+        final screenWidth = responsive.physicalScreenWidth;
 
-    // Compact button size for embedded view
-    final buttonSize = screenWidth < 600
-        ? 36.0 // Mobile: ultra compact
-        : screenWidth < 1024
-        ? 42.0 // Tablet: compact
-        : 48.0; // Desktop: moderate
+        // ZOOM-STABLE: Accessibility-first button sizing with content scaling
+        final buttonSize =
+            (screenWidth < 600
+                ? 44.0 // Mobile: increased from 36 to 44
+                : screenWidth < 1024
+                ? 50.0 // Tablet: increased from 42 to 50
+                : 56.0) *
+            responsive.contentScale; // Desktop: increased from 48 to 56
 
-    // Reduced horizontal padding for embedded view
-    final horizontalPadding = screenWidth < 600
-        ? 16.0 // Mobile: tight padding
-        : screenWidth < 1024
-        ? 24.0 // Tablet: reduced padding
-        : 32.0; // Desktop: moderate padding
+        // Enhanced padding with zoom-aware scaling
+        final horizontalPadding =
+            (screenWidth < 600
+                ? 20.0 // Mobile: increased from 16 to 20
+                : screenWidth < 1024
+                ? 28.0 // Tablet: increased from 24 to 28
+                : 36.0) *
+            responsive.contentScale; // Desktop: increased from 32 to 36
 
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(
-        horizontal: horizontalPadding,
-        vertical: 8.0, // Reduced from 16.0 for embedded view
-      ),
-      decoration: const BoxDecoration(
-        color: Color(0xFFFFF8E1), // Soft cream background
-        boxShadow: [
-          BoxShadow(
-            color: Color(0x15000000),
-            blurRadius: 12,
-            offset: Offset(0, -3),
-            spreadRadius: 1,
+        return SizedBox(
+          width: double.infinity,
+          child: Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: horizontalPadding,
+              vertical:
+                  12.0 *
+                  responsive
+                      .contentScale, // Increased from 8.0 for better touch targets
+            ),
+            decoration: const BoxDecoration(
+              color: Color(0xFFFFF8E1), // Soft cream background
+              boxShadow: [
+                BoxShadow(
+                  color: Color(0x15000000),
+                  blurRadius: 12,
+                  offset: Offset(0, -3),
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+            child: SafeArea(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  // Home button
+                  _buildNavigationButton(
+                    icon: Icons.home_rounded,
+                    onPressed: onHomePressed,
+                    buttonSize: buttonSize,
+                    isEnabled: true,
+                    buttonType: 'home',
+                  ),
+
+                  // Back button
+                  _buildNavigationButton(
+                    icon: Icons.arrow_back_rounded,
+                    onPressed: canGoBack ? onBackPressed : null,
+                    buttonSize: buttonSize,
+                    isEnabled: canGoBack,
+                    buttonType: 'back',
+                  ),
+
+                  // Next button
+                  _buildNavigationButton(
+                    icon: Icons.arrow_forward_rounded,
+                    onPressed: canGoNext ? onNextPressed : null,
+                    buttonSize: buttonSize,
+                    isEnabled: canGoNext,
+                    buttonType: 'next',
+                  ),
+                ],
+              ),
+            ),
           ),
-        ],
-      ),
-      child: SafeArea(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            // Home button
-            _buildNavigationButton(
-              icon: Icons.home_rounded,
-              onPressed: onHomePressed,
-              buttonSize: buttonSize,
-              isEnabled: true,
-              buttonType: 'home',
-            ),
-
-            // Back button
-            _buildNavigationButton(
-              icon: Icons.arrow_back_rounded,
-              onPressed: canGoBack ? onBackPressed : null,
-              buttonSize: buttonSize,
-              isEnabled: canGoBack,
-              buttonType: 'back',
-            ),
-
-            // Next button
-            _buildNavigationButton(
-              icon: Icons.arrow_forward_rounded,
-              onPressed: canGoNext ? onNextPressed : null,
-              buttonSize: buttonSize,
-              isEnabled: canGoNext,
-              buttonType: 'next',
-            ),
-          ],
-        ),
-      ),
+        );
+      },
     );
   }
 

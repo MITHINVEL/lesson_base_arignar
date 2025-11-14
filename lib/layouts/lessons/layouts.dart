@@ -3,6 +3,7 @@ import 'package:lesson_base_arignar/theme/app_colors.dart';
 import 'package:lesson_base_arignar/theme/app_text_styles.dart';
 import 'package:lesson_base_arignar/widgets/density/app_button.dart';
 import 'package:lesson_base_arignar/widgets/density/scalable_text.dart';
+import 'package:lesson_base_arignar/responsive/responsive.dart';
 
 class AdaptiveLessonLayout extends StatelessWidget {
   const AdaptiveLessonLayout({
@@ -28,224 +29,251 @@ class AdaptiveLessonLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Always use mobile-first single column layout
-    return _buildMobileLayout(context);
-  }
-
-  Widget _buildHeader(BuildContext context) {
-    final textScaleFactor = MediaQuery.textScalerOf(context).scale(1.0);
-    return Padding(
-      padding: EdgeInsets.only(
-        top: 8 * textScaleFactor,
-        left: 12 * textScaleFactor,
-        right: 12 * textScaleFactor,
-        bottom: 6 * textScaleFactor,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: ScalableText(
-                  lessonTitle,
-                  style: AppTextStyles.headlineMedium(
-                    context,
-                  ).copyWith(fontSize: 18, fontWeight: FontWeight.w600),
-                  maxFontSize: 20,
-                  minFontSize: 16,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              SizedBox(width: 8 * textScaleFactor),
-              AppButton(
-                label: 'Exit',
-                onPressed: onExitPressed,
-                expanded: false,
-                height: 36 * textScaleFactor,
-              ),
-            ],
-          ),
-          SizedBox(height: 6 * textScaleFactor),
-          progressContent,
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMobileLayout(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final screenWidth = constraints.maxWidth;
-        final isCompact = screenWidth < 420;
-        final textScaleFactor = MediaQuery.textScalerOf(context).scale(1.0);
-
-        return Column(
-          children: [
-            // Header with title and progress bar
-            Flexible(flex: 0, child: _buildHeader(context)),
-
-            // Main content area
-            Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(
-                  horizontal: (isCompact ? 12 : 16) * textScaleFactor,
-                  vertical: 4 * textScaleFactor,
-                ),
-                physics: const ClampingScrollPhysics(),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    questionCard,
-                    SizedBox(height: 4 * textScaleFactor),
-                    // Show mainContent if it exists
-                    if (!(mainContent is SizedBox &&
-                        (mainContent as SizedBox).width == 0.0 &&
-                        (mainContent as SizedBox).height == 0.0)) ...[
-                      DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: AppColors.white,
-                          borderRadius: BorderRadius.circular(
-                            16 * textScaleFactor,
-                          ),
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.all(
-                            (isCompact ? 8 : 12) * textScaleFactor,
-                          ),
-                          child: mainContent,
-                        ),
-                      ),
-                      SizedBox(height: 4 * textScaleFactor),
-                    ],
-                    // Add spacing for bottom navigation
-                    SizedBox(height: MediaQuery.of(context).size.height * 0.06),
-                  ],
-                ),
-              ),
-            ),
-
-            // Bottom navigation with icon buttons
-            Flexible(flex: 0, child: _buildBottomNavigation(context)),
-          ],
-        );
+    return ResponsiveBuilder(
+      builder: (context, responsive) {
+        return _buildFlexibleLayout(context, responsive);
       },
     );
   }
 
-  Widget _buildBottomNavigation(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, navConstraints) {
-        final screenWidth = navConstraints.maxWidth;
-        final screenHeight = navConstraints.maxHeight;
-        final textScaleFactor = MediaQuery.textScalerOf(context).scale(1.0);
-
-        // Calculate button size based on both width and height with text scaling
-        final buttonSize = (screenWidth * 0.07 * textScaleFactor).clamp(
-          32.0,
-          44.0 * textScaleFactor,
-        );
-        final navPadding = (screenWidth * 0.02 * textScaleFactor).clamp(
-          8.0,
-          16.0 * textScaleFactor,
-        );
-        final verticalPadding = (screenHeight * 0.008 * textScaleFactor).clamp(
-          4.0,
-          10.0 * textScaleFactor,
-        );
-
-        return SafeArea(
-          child: Container(
-            width: screenWidth,
-            padding: EdgeInsets.symmetric(
-              horizontal: navPadding,
-              vertical: verticalPadding,
-            ),
-            decoration: BoxDecoration(
-              color: AppColors.lightYellowBackground,
-              border: Border(
-                top: BorderSide(
-                  color: AppColors.border.withOpacity(0.3),
-                  width: 0.8,
-                ),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              mainAxisSize: MainAxisSize.max,
+  Widget _buildHeader(BuildContext context, ResponsiveInfo responsive) {
+    return SizedBox(
+      width: double.infinity,
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: responsive.getFlexiblePadding(base: 16, min: 8, max: 24),
+          vertical: responsive.getFlexiblePadding(base: 12, min: 6, max: 16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
               children: [
                 Expanded(
-                  child: Center(
-                    child: _buildIconButton(
-                      context: context,
-                      icon: Icons.home,
-                      onPressed: onExitPressed,
-                      size: buttonSize,
+                  child: ScalableText(
+                    lessonTitle,
+                    style: AppTextStyles.headlineMedium(
+                      context,
+                    ).copyWith(fontWeight: FontWeight.w600),
+                    maxFontSize: responsive.getFlexibleFontSize(
+                      base: 20,
+                      max: 24,
                     ),
+                    minFontSize: responsive.getFlexibleFontSize(
+                      base: 16,
+                      min: 14,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
-                Expanded(
-                  child: Center(
-                    child: _buildIconButton(
-                      context: context,
-                      icon: Icons.arrow_back,
-                      onPressed: onPrevPressed,
-                      size: buttonSize,
-                    ),
+                SizedBox(
+                  width: responsive.getFlexiblePadding(
+                    base: 12,
+                    min: 6,
+                    max: 16,
                   ),
                 ),
-                Expanded(
-                  child: Center(
-                    child: _buildIconButton(
-                      context: context,
-                      icon: Icons.arrow_forward,
-                      onPressed: onNextPressed,
-                      size: buttonSize,
-                    ),
-                  ),
+                AppButton(
+                  label: 'Exit',
+                  onPressed: onExitPressed,
+                  expanded: false,
+                  height: responsive.getFlexibleHeight(5).clamp(32, 48),
                 ),
               ],
             ),
+            SizedBox(
+              height: responsive.getFlexiblePadding(base: 8, min: 4, max: 12),
+            ),
+            progressContent,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFlexibleLayout(BuildContext context, ResponsiveInfo responsive) {
+    return Scaffold(
+      body: SizedBox(
+        width: double.infinity,
+        height: double.infinity,
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Header with title and progress
+              _buildHeader(context, responsive),
+
+              // Main content area with flexible sizing - NO MAX WIDTH CONSTRAINTS
+              Expanded(
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: responsive.getFlexiblePadding(
+                        base: 16,
+                        min: 8,
+                        max: 24,
+                      ),
+                    ),
+                    child: SingleChildScrollView(
+                      physics: const ClampingScrollPhysics(),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          SizedBox(
+                            height: responsive.getFlexiblePadding(base: 8),
+                          ),
+
+                          // Question card with flexible sizing
+                          questionCard,
+
+                          SizedBox(
+                            height: responsive.getFlexiblePadding(
+                              base: 16,
+                              min: 8,
+                              max: 24,
+                            ),
+                          ),
+
+                          // Main content with flexible container
+                          if (_shouldShowMainContent())
+                            ..._buildMainContentContainer(responsive),
+
+                          // Bottom spacing that adapts to screen height
+                          SizedBox(
+                            height: responsive
+                                .getFlexibleHeight(8)
+                                .clamp(32, 80),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              // Bottom navigation
+              _buildBottomNavigation(context, responsive),
+            ],
           ),
-        );
-      },
+        ),
+      ),
+    );
+  }
+
+  bool _shouldShowMainContent() {
+    return !(mainContent is SizedBox &&
+        (mainContent as SizedBox).width == 0.0 &&
+        (mainContent as SizedBox).height == 0.0);
+  }
+
+  List<Widget> _buildMainContentContainer(ResponsiveInfo responsive) {
+    return [
+      SizedBox(
+        width: double.infinity,
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(
+              responsive.getFlexiblePadding(base: 16, min: 12, max: 20),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: responsive.getFlexiblePadding(base: 4, max: 8),
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          padding: EdgeInsets.all(
+            responsive.getFlexiblePadding(base: 16, min: 12, max: 24),
+          ),
+          child: mainContent,
+        ),
+      ),
+    ];
+  }
+
+  Widget _buildBottomNavigation(
+    BuildContext context,
+    ResponsiveInfo responsive,
+  ) {
+    final buttonSize = responsive.getFlexibleWidth(8).clamp(40.0, 56.0);
+    final navPadding = responsive.getFlexiblePadding(base: 16, min: 8, max: 24);
+
+    return SizedBox(
+      width: double.infinity,
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: navPadding,
+          vertical: responsive.getFlexiblePadding(base: 12, min: 8, max: 16),
+        ),
+        decoration: BoxDecoration(
+          color: AppColors.lightYellowBackground,
+          border: Border(
+            top: BorderSide(color: AppColors.border.withOpacity(0.3), width: 1),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 4,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _buildIconButton(
+              context: context,
+              responsive: responsive,
+              icon: Icons.home,
+              onPressed: onExitPressed,
+              size: buttonSize,
+            ),
+            _buildIconButton(
+              context: context,
+              responsive: responsive,
+              icon: Icons.arrow_back,
+              onPressed: onPrevPressed,
+              size: buttonSize,
+            ),
+            _buildIconButton(
+              context: context,
+              responsive: responsive,
+              icon: Icons.arrow_forward,
+              onPressed: onNextPressed,
+              size: buttonSize,
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   Widget _buildIconButton({
     required BuildContext context,
+    required ResponsiveInfo responsive,
     required IconData icon,
     required VoidCallback? onPressed,
     required double size,
   }) {
-    final textScaleFactor = MediaQuery.textScalerOf(context).scale(1.0);
+    final borderRadius = size * 0.25;
+    final iconSize = (size * 0.5).clamp(16.0, 28.0);
+
     return Material(
       color: AppColors.headerOrange,
-      borderRadius: BorderRadius.circular(size * 0.2),
+      borderRadius: BorderRadius.circular(borderRadius),
+      elevation: 2,
       child: InkWell(
         onTap: onPressed,
-        borderRadius: BorderRadius.circular(size * 0.2),
+        borderRadius: BorderRadius.circular(borderRadius),
+        splashColor: AppColors.white.withOpacity(0.2),
         child: Container(
           width: size,
           height: size,
-          constraints: BoxConstraints(
-            minWidth: 32 * textScaleFactor,
-            minHeight: 32 * textScaleFactor,
-            maxWidth: 48 * textScaleFactor,
-            maxHeight: 48 * textScaleFactor,
-          ),
           alignment: Alignment.center,
-          child: Icon(
-            icon,
-            color: AppColors.white,
-            size: (size * 0.45 * textScaleFactor).clamp(
-              14.0 * textScaleFactor,
-              22.0 * textScaleFactor,
-            ),
-          ),
+          child: Icon(icon, color: AppColors.white, size: iconSize),
         ),
       ),
     );

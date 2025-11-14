@@ -19,11 +19,17 @@ class QuizImage extends StatelessWidget {
     final isVeryCompact = screenWidth < 400;
     final isCompact = screenWidth < 600;
 
-    // Compact sizing for embedded view - reduced by ~25%
+    // ACCESSIBILITY-FIRST sizing - Larger images for better visibility
     final containerWidth =
-        screenWidth * (isVeryCompact ? 0.75 : (isCompact ? 0.7 : 0.65));
-    final maxContainerWidth = isCompact ? 280.0 : 350.0;
-    final finalWidth = containerWidth.clamp(250.0, maxContainerWidth);
+        screenWidth *
+        (isVeryCompact
+            ? 0.85
+            : (isCompact ? 0.80 : 0.75)); // Larger percentages
+    final maxContainerWidth = isCompact ? 320.0 : 400.0; // Larger max sizes
+    final finalWidth = containerWidth.clamp(
+      280.0,
+      maxContainerWidth,
+    ); // Higher minimum
 
     // Border radius based on viewport
     final borderRadius = (screenWidth * 0.05).clamp(22.0, 28.0);

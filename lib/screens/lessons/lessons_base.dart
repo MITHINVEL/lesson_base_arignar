@@ -60,92 +60,113 @@ abstract class LessonsBaseState<T extends LessonsBase> extends State<T> {
 
   @protected
   Widget showProgressIndicator() {
-    final isCompact = MediaQuery.of(context).size.width < 420;
-    final progressValue = lessons.isEmpty
-        ? 0.0
-        : (currentLessonIndex + 1) / lessons.length.toDouble();
-    final percentage = lessons.isEmpty
-        ? 0
-        : ((currentLessonIndex + 1) / lessons.length * 100).round();
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final progressValue = lessons.isEmpty
+            ? 0.0
+            : (currentLessonIndex + 1) / lessons.length.toDouble();
+        final percentage = lessons.isEmpty
+            ? 0
+            : ((currentLessonIndex + 1) / lessons.length * 100).round();
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
+        // Flexible sizing based on available width
+        final availableWidth = constraints.maxWidth;
+        final isCompact = availableWidth < 300;
+        final isSmall = availableWidth < 400;
+
+        final horizontalPadding = isCompact ? 4.0 : (isSmall ? 8.0 : 12.0);
+        final verticalPadding = isCompact ? 6.0 : (isSmall ? 8.0 : 12.0);
+        final progressHeight = isCompact ? 5.0 : (isSmall ? 6.0 : 8.0);
+
+        return Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: horizontalPadding,
+            vertical: verticalPadding,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              ScalableText(
-                '${currentLessonIndex + 1}/${lessons.length}',
-                minFontSize: isCompact ? 11 : 12,
-                maxFontSize: isCompact ? 13 : 14,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.darkText,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    child: LinearProgressIndicator(
-                      value: progressValue,
-                      backgroundColor: AppColors.progressTrackGrey,
-                      color: AppColors.progressRed,
-                      minHeight: isCompact ? 6 : 8,
+              Row(
+                children: [
+                  Flexible(
+                    flex: 0,
+                    child: ScalableText(
+                      '${currentLessonIndex + 1}/${lessons.length}',
+                      minFontSize: isCompact ? 10 : 12,
+                      maxFontSize: isCompact ? 12 : 14,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.darkText,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
-                ),
-              ),
-              ScalableText(
-                '$percentage%',
-                minFontSize: isCompact ? 11 : 12,
-                maxFontSize: isCompact ? 13 : 14,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.darkText,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-          if (isCurrentAnswerCorrect != null) ...[
-            SizedBox(height: isCompact ? 12 : 16),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: isCurrentAnswerCorrect!
-                    ? AppColors.success.withOpacity(0.12)
-                    : AppColors.error.withOpacity(0.12),
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color:
-                        (isCurrentAnswerCorrect!
-                                ? AppColors.success
-                                : AppColors.error)
-                            .withOpacity(0.15),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isCompact ? 8 : 12,
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(progressHeight / 2),
+                        child: LinearProgressIndicator(
+                          value: progressValue,
+                          backgroundColor: AppColors.progressTrackGrey,
+                          color: AppColors.progressRed,
+                          minHeight: progressHeight,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Flexible(
+                    flex: 0,
+                    child: ScalableText(
+                      '$percentage%',
+                      minFontSize: isCompact ? 10 : 12,
+                      maxFontSize: isCompact ? 12 : 14,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.darkText,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ),
                 ],
               ),
-              child: Padding(
-                padding: EdgeInsets.all(isCompact ? 8 : 10),
-                child: ScalableText(
-                  isCurrentAnswerCorrect! ? 'Correct!' : 'Try again!',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              if (isCurrentAnswerCorrect != null) ...[
+                SizedBox(height: isCompact ? 8 : 12),
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
                     color: isCurrentAnswerCorrect!
-                        ? AppColors.success
-                        : AppColors.error,
+                        ? AppColors.success.withOpacity(0.12)
+                        : AppColors.error.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(isCompact ? 8 : 12),
+                    border: Border.all(
+                      color:
+                          (isCurrentAnswerCorrect!
+                                  ? AppColors.success
+                                  : AppColors.error)
+                              .withOpacity(0.3),
+                      width: 1,
+                    ),
                   ),
-                  minFontSize: 13,
-                  maxFontSize: 20,
+                  padding: EdgeInsets.all(isCompact ? 8 : 12),
+                  child: ScalableText(
+                    isCurrentAnswerCorrect! ? 'Correct!' : 'Try again!',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: isCurrentAnswerCorrect!
+                          ? AppColors.success
+                          : AppColors.error,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    minFontSize: isCompact ? 12 : 14,
+                    maxFontSize: isCompact ? 16 : 20,
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-              ),
-            ),
-          ],
-        ],
-      ),
+              ],
+            ],
+          ),
+        );
+      },
     );
   }
 

@@ -1,65 +1,139 @@
 import 'package:flutter/widgets.dart';
-import 'dart:math' as math;
+import 'dart:html' as html;
+import 'package:flutter/foundation.dart';
 
 class ResponsiveInfo {
   ResponsiveInfo({
     required this.screenWidth,
     required this.screenHeight,
+    required this.physicalScreenWidth,
+    required this.physicalScreenHeight,
     required this.isPortrait,
     required this.isLandscape,
     required this.breakpoint,
-    required this.customScaleFactor,
-    required this.detectedZoomLevel,
-    required this.devicePixelRatio,
+    required this.zoomFactor,
   });
 
   final double screenWidth;
   final double screenHeight;
+  final double physicalScreenWidth;
+  final double physicalScreenHeight;
   final bool isPortrait;
   final bool isLandscape;
   final ResponsiveBreakpoint breakpoint;
-  final double customScaleFactor;
-  final double detectedZoomLevel;
-  final double devicePixelRatio;
+  final double zoomFactor;
 
   bool get isMobile => breakpoint == ResponsiveBreakpoint.mobile;
   bool get isTablet => breakpoint == ResponsiveBreakpoint.tablet;
   bool get isDesktop => breakpoint == ResponsiveBreakpoint.desktop;
 
-  // Automatic compact mode detection for extreme zoom
-  bool get isCompactMode => customScaleFactor < 0.7 || detectedZoomLevel >= 2.0;
-  bool get isSuperCompactMode =>
-      customScaleFactor < 0.5 || detectedZoomLevel >= 3.0;
+  // More flexible responsive breakpoints
+  bool get isVeryCompact => physicalScreenWidth < 320;
+  bool get isCompact => physicalScreenWidth < 480;
+  bool get isMedium => physicalScreenWidth >= 480 && physicalScreenWidth < 768;
+  bool get isLarge => physicalScreenWidth >= 768 && physicalScreenWidth < 1200;
+  bool get isXLarge => physicalScreenWidth >= 1200;
 
-  // Custom scaling methods - ALL use the custom scale factor
-  double get fontScale => customScaleFactor;
-  double get spacingScale => customScaleFactor;
-  double get componentScale => customScaleFactor;
-  double get borderScale => customScaleFactor;
-  double get imageScale => customScaleFactor;
-  double get paddingScale => customScaleFactor;
-  double get marginScale => customScaleFactor;
+  // Zoom detection helpers
+  bool get isZoomed => zoomFactor > 1.1;
+  bool get isHighlyZoomed => zoomFactor > 1.5;
+  bool get isExtremelyZoomed => zoomFactor > 2.0;
 
-  // Enhanced scaling methods for extreme zoom
-  double get compactFontScale =>
-      isCompactMode ? customScaleFactor * 0.85 : customScaleFactor;
-  double get compactSpacingScale =>
-      isCompactMode ? customScaleFactor * 0.7 : customScaleFactor;
-  double get compactImageScale =>
-      isCompactMode ? customScaleFactor * 0.6 : customScaleFactor;
+  // Flexible scaling factors for different screen sizes
+  double get flexibleScale {
+    if (isVeryCompact) return 0.85;
+    if (isCompact) return 0.95;
+    if (isMedium) return 1.0;
+    if (isLarge) return 1.1;
+    return 1.15; // XLarge
+  }
 
-  // Helper methods for applying scaling
-  double scaleFont(double baseFontSize) => baseFontSize * compactFontScale;
-  double scaleSpacing(double baseSpacing) => baseSpacing * compactSpacingScale;
-  double scaleComponent(double baseSize) => baseSize * componentScale;
-  double scaleBorder(double borderRadius) => borderRadius * borderScale;
-  double scaleImage(double imageSize) => imageSize * compactImageScale;
-  EdgeInsets scalePadding(EdgeInsets basePadding) => EdgeInsets.fromLTRB(
-    basePadding.left * compactSpacingScale,
-    basePadding.top * compactSpacingScale,
-    basePadding.right * compactSpacingScale,
-    basePadding.bottom * compactSpacingScale,
-  );
+  // Content scaling for zoom-independent sizing with flexible adjustment
+  double get contentScale {
+    final zoomFactor = physicalScreenWidth / screenWidth;
+    // More granular zoom scaling
+    if (zoomFactor > 2.0) return 0.75; // Very high zoom
+    if (zoomFactor > 1.75) return 0.8; // High zoom
+    if (zoomFactor > 1.5) return 0.85; // Medium-high zoom
+    if (zoomFactor > 1.25) return 0.9; // Medium zoom
+    return flexibleScale; // Normal zoom with device-based scaling
+  }
+
+  // Flexible dimension calculations
+  double getFlexibleWidth(double percentage) {
+    return (physicalScreenWidth * percentage / 100).clamp(
+          physicalScreenWidth * 0.1,
+          physicalScreenWidth * 0.95,
+        ) *
+        contentScale;
+  }
+
+  double getFlexibleHeight(double percentage) {
+    return (physicalScreenHeight * percentage / 100).clamp(
+          physicalScreenHeight * 0.05,
+          physicalScreenHeight * 0.8,
+        ) *
+        contentScale;
+  }
+
+  double getFlexiblePadding({required double base, double? min, double? max}) {
+    final calculated = base * contentScale * flexibleScale;
+    return calculated.clamp(min ?? calculated * 0.5, max ?? calculated * 1.5);
+  }
+
+  double getFlexibleFontSize({required double base, double? min, double? max}) {
+    final calculated = base * contentScale;
+    return calculated.clamp(min ?? 12.0, max ?? base * 1.3);
+  }
+
+  // Zoom-aware adaptive scaling for different content types
+  double getAdaptiveFontSize({
+    required double mobile,
+    required double tablet,
+    required double desktop,
+  }) {
+    double baseSize;
+    if (isMobile) {
+      baseSize = mobile;
+    } else if (isTablet) {
+      baseSize = tablet;
+    } else {
+      baseSize = desktop;
+    }
+    return baseSize * contentScale;
+  }
+
+  double getAdaptiveSpacing({
+    required double mobile,
+    required double tablet,
+    required double desktop,
+  }) {
+    double baseSpacing;
+    if (isMobile) {
+      baseSpacing = mobile;
+    } else if (isTablet) {
+      baseSpacing = tablet;
+    } else {
+      baseSpacing = desktop;
+    }
+    return baseSpacing * contentScale;
+  }
+
+  EdgeInsets getAdaptivePadding({
+    required EdgeInsets mobile,
+    required EdgeInsets tablet,
+    required EdgeInsets desktop,
+  }) {
+    EdgeInsets basePadding;
+    if (isMobile) {
+      basePadding = mobile;
+    } else if (isTablet) {
+      basePadding = tablet;
+    } else {
+      basePadding = desktop;
+    }
+    return basePadding * contentScale;
+  }
 }
 
 enum ResponsiveBreakpoint { mobile, tablet, desktop }
@@ -77,32 +151,33 @@ class ResponsiveBuilder extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final media = MediaQuery.maybeOf(context);
-        final width = media?.size.width ?? constraints.maxWidth;
-        final height = media?.size.height ?? constraints.maxHeight;
-        final orientation =
-            media?.orientation ??
-            (width > height ? Orientation.landscape : Orientation.portrait);
+        final viewportWidth = media?.size.width ?? constraints.maxWidth;
+        final viewportHeight = media?.size.height ?? constraints.maxHeight;
 
-        // Get device pixel ratio for zoom detection
-        final devicePixelRatio = media?.devicePixelRatio ?? 1.0;
+        // Get physical screen dimensions (zoom-independent)
+        final physicalDimensions = _getPhysicalScreenDimensions();
+        final physicalWidth = physicalDimensions['width'] ?? viewportWidth;
+        final physicalHeight = physicalDimensions['height'] ?? viewportHeight;
 
-        // Calculate custom scale factor using your scaling table
-        final zoomData = _calculateCustomZoomScale(width, devicePixelRatio);
-        final detectedZoom = zoomData['detectedZoom'] as double;
-        final customScale = zoomData['customScale'] as double;
+        // Calculate zoom factor
+        final zoomFactor = physicalWidth / viewportWidth;
 
-        // Breakpoint resolution based on ACTUAL screen width (not affected by zoom)
-        final breakpoint = _resolveBreakpoint(width);
+        final orientation = physicalWidth > physicalHeight
+            ? Orientation.landscape
+            : Orientation.portrait;
+
+        // Use physical dimensions for breakpoint calculation (zoom-independent)
+        final breakpoint = _resolveBreakpoint(physicalWidth);
 
         final info = ResponsiveInfo(
-          screenWidth: width,
-          screenHeight: height,
+          screenWidth: viewportWidth,
+          screenHeight: viewportHeight,
+          physicalScreenWidth: physicalWidth,
+          physicalScreenHeight: physicalHeight,
           isPortrait: orientation == Orientation.portrait,
           isLandscape: orientation == Orientation.landscape,
           breakpoint: breakpoint,
-          customScaleFactor: customScale,
-          detectedZoomLevel: detectedZoom,
-          devicePixelRatio: devicePixelRatio,
+          zoomFactor: zoomFactor,
         );
 
         return builder(context, info);
@@ -110,126 +185,35 @@ class ResponsiveBuilder extends StatelessWidget {
     );
   }
 
-  // CUSTOM ZOOM-NORMALIZATION ENGINE WITH FULL FLEX SHRINK
-  Map<String, double> _calculateCustomZoomScale(
-    double screenWidth,
-    double devicePixelRatio,
-  ) {
-    // Base reference dimensions for zoom detection
-    const baseDesktopWidth = 1366.0; // Common laptop resolution
+  // Get physical screen dimensions independent of browser zoom
+  Map<String, double> _getPhysicalScreenDimensions() {
+    if (kIsWeb) {
+      try {
+        final screenWidth = html.window.screen?.width?.toDouble() ?? 0.0;
+        final screenHeight = html.window.screen?.height?.toDouble() ?? 0.0;
 
-    // Detect browser zoom level using viewport reduction + DPR
-    double detectedZoom = 1.0;
+        // Fallback to window.outerWidth/outerHeight if screen dimensions are not available
+        final windowWidth = html.window.outerWidth.toDouble();
+        final windowHeight = html.window.outerHeight.toDouble();
 
-    // Advanced zoom detection algorithm
-    if (devicePixelRatio > 1.0) {
-      // Method 1: Viewport-based detection
-      double viewportZoom = 1.0;
-      if (screenWidth < baseDesktopWidth) {
-        viewportZoom = baseDesktopWidth / screenWidth;
+        return {
+          'width': screenWidth > 0 ? screenWidth : windowWidth,
+          'height': screenHeight > 0 ? screenHeight : windowHeight,
+        };
+      } catch (e) {
+        // Fallback for any web platform issues
+        return {'width': 1024.0, 'height': 768.0};
       }
-
-      // Method 2: Device pixel ratio correlation
-      double dprZoom = devicePixelRatio;
-
-      // Combine both methods for accurate detection
-      detectedZoom = math.max(viewportZoom, dprZoom);
     } else {
-      // Fallback for DPR = 1.0
-      if (screenWidth < baseDesktopWidth) {
-        detectedZoom = baseDesktopWidth / screenWidth;
-      }
+      // For non-web platforms, return default values
+      return {'width': 1024.0, 'height': 768.0};
     }
-
-    // Clamp to realistic browser zoom range
-    detectedZoom = detectedZoom.clamp(0.5, 5.0);
-
-    // APPLY CUSTOM SCALING TABLE WITH EXTREME ZOOM SUPPORT
-    double customScaleFactor = _getCustomScaleFromZoom(detectedZoom);
-
-    // FULL FLEX SHRINK MODE for extreme zoom levels
-    if (detectedZoom >= 3.0) {
-      // 300%+ zoom: Ultra-compact mode
-      customScaleFactor *= 0.5; // Reduce by 50%
-    } else if (detectedZoom >= 2.5) {
-      // 250%+ zoom: Super-compact mode
-      customScaleFactor *= 0.6; // Reduce by 40%
-    } else if (detectedZoom >= 2.0) {
-      // 200%+ zoom: Compact mode
-      customScaleFactor *= 0.75; // Reduce by 25%
-    }
-
-    return {
-      'detectedZoom': detectedZoom,
-      'customScale': customScaleFactor.clamp(
-        0.3,
-        2.0,
-      ), // Always stay within bounds
-    };
   }
 
-  // YOUR CUSTOM SCALING TABLE IMPLEMENTATION
-  double _getCustomScaleFromZoom(double browserZoom) {
-    // Convert browser zoom percentage to your custom UI scale
-    // Browser 100% → UI 80%
-    // Browser 120% → UI 90%
-    // Browser 125% → UI 100% (normal)
-    // Browser 150% → UI 125%
-    // Browser 200% → UI 150%
-
-    final scalingTable = <double, double>{
-      1.00: 0.80, // Browser 100% → UI 80%
-      1.20: 0.90, // Browser 120% → UI 90%
-      1.25: 1.00, // Browser 125% → UI 100% (normal)
-      1.50: 1.25, // Browser 150% → UI 125%
-      2.00: 1.50, // Browser 200% → UI 150%
-    };
-
-    // Find exact match first
-    if (scalingTable.containsKey(browserZoom)) {
-      return scalingTable[browserZoom]!;
-    }
-
-    // Interpolate between closest values for smooth scaling
-    final zoomLevels = scalingTable.keys.toList()..sort();
-
-    // Handle edge cases
-    if (browserZoom <= zoomLevels.first) {
-      return scalingTable[zoomLevels.first]!;
-    }
-    if (browserZoom >= zoomLevels.last) {
-      return scalingTable[zoomLevels.last]!;
-    }
-
-    // Find interpolation range
-    double lowerZoom = zoomLevels.first;
-    double upperZoom = zoomLevels.last;
-
-    for (int i = 0; i < zoomLevels.length - 1; i++) {
-      if (browserZoom >= zoomLevels[i] && browserZoom <= zoomLevels[i + 1]) {
-        lowerZoom = zoomLevels[i];
-        upperZoom = zoomLevels[i + 1];
-        break;
-      }
-    }
-
-    // Linear interpolation
-    final lowerScale = scalingTable[lowerZoom]!;
-    final upperScale = scalingTable[upperZoom]!;
-    final ratio = (browserZoom - lowerZoom) / (upperZoom - lowerZoom);
-
-    return lowerScale + (upperScale - lowerScale) * ratio;
-  }
-
-  ResponsiveBreakpoint _resolveBreakpoint(double width) {
-    // Enhanced breakpoints for zoom support
-    // 1366px @ 150% zoom = ~911px effective viewport
-    if (width < 480) return ResponsiveBreakpoint.mobile; // Very small
-    if (width < 768) return ResponsiveBreakpoint.mobile; // Mobile
-    if (width < 1024) return ResponsiveBreakpoint.tablet; // Tablet/Small laptop
-    if (width < 1440)
-      return ResponsiveBreakpoint.desktop; // Desktop/1366px+zoom
-    return ResponsiveBreakpoint.desktop; // Large desktop
+  ResponsiveBreakpoint _resolveBreakpoint(double physicalWidth) {
+    if (physicalWidth < 600) return ResponsiveBreakpoint.mobile;
+    if (physicalWidth < 1024) return ResponsiveBreakpoint.tablet;
+    return ResponsiveBreakpoint.desktop;
   }
 }
 

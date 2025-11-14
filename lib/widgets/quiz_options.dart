@@ -18,21 +18,29 @@ class QuizOptions extends StatelessWidget {
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);
     final screenWidth = media.size.width;
+    final screenHeight = media.size.height;
+
+    // PRODUCTION-SAFE: Auto-scale factors for extremely small screens
+    double fontScale = 1.0;
+    double spacingScale = 1.0;
+    
+    if (screenWidth < 350) {
+      fontScale = (screenWidth / 350).clamp(0.7, 1.0);
+      spacingScale = (screenWidth / 350).clamp(0.6, 1.0);
+    }
 
     // Enhanced responsive breakpoints for better medium-screen support
     final isMobile = screenWidth < 600;
     final isTablet = screenWidth >= 600 && screenWidth < 1200;
 
-    // Responsive container width calculations with better medium-screen support
+    // Responsive container width calculations with better medium-screen support and safe constraints
     double containerWidth;
     if (isMobile) {
-      containerWidth =
-          screenWidth * 0.90; // Mobile: 90% for comfortable spacing
+      containerWidth = (screenWidth * 0.90 * spacingScale).clamp(280.0, double.infinity);
     } else if (isTablet) {
       containerWidth = screenWidth * 0.75; // Tablet: 75% for balanced layout
     } else {
-      containerWidth =
-          screenWidth * 0.60; // Desktop: 60% for optimal readability
+      containerWidth = screenWidth * 0.60; // Desktop: 60% for optimal readability
     }
 
     // Grid configuration with proper medium-screen handling

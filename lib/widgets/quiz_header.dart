@@ -21,9 +21,19 @@ class QuizHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);
     final screenWidth = media.size.width;
+    final screenHeight = media.size.height;
 
-    // Compact padding after removing Exit button
-    final horizontalPadding = screenWidth < 400
+    // PRODUCTION-SAFE: Auto-scale factors for extremely small screens
+    double fontScale = 1.0;
+    double spacingScale = 1.0;
+    
+    if (screenWidth < 350) {
+      fontScale = (screenWidth / 350).clamp(0.75, 1.0);
+      spacingScale = (screenWidth / 350).clamp(0.6, 1.0);
+    }
+
+    // Safe padding with minimum constraints
+    final horizontalPadding = ((screenWidth < 400
         ? 16.0
         : screenWidth < 600
         ? 20.0
@@ -31,10 +41,10 @@ class QuizHeader extends StatelessWidget {
         ? 24.0
         : screenWidth < 1400
         ? 28.0
-        : 32.0;
+        : 32.0) * spacingScale).clamp(8.0, 50.0);
 
-    // Very compact vertical spacing
-    final verticalPadding = screenWidth < 400
+    // Very compact vertical spacing with overflow protection
+    final verticalPadding = ((screenWidth < 400
         ? 6.0
         : screenWidth < 600
         ? 8.0
@@ -42,10 +52,10 @@ class QuizHeader extends StatelessWidget {
         ? 10.0
         : screenWidth < 1400
         ? 12.0
-        : 14.0;
+        : 14.0) * spacingScale).clamp(4.0, 20.0);
 
-    // Slim modern progress bar height (4-6px max)
-    final progressHeight = screenWidth < 400
+    // Slim modern progress bar height with safe minimum
+    final progressHeight = (screenWidth < 400
         ? 4.0 // Mobile: ultra-slim
         : screenWidth < 600
         ? 4.5 // Tablet: slim
@@ -53,7 +63,7 @@ class QuizHeader extends StatelessWidget {
         ? 5.0 // Laptop: moderate
         : screenWidth < 1400
         ? 5.5 // Desktop: slightly thicker
-        : 6.0; // Large monitors: max thickness
+        : 6.0).clamp(3.0, 8.0); // Safe bounds
 
     // Responsive progress bar width
     final progressBarWidth = screenWidth < 600
@@ -62,8 +72,8 @@ class QuizHeader extends StatelessWidget {
         ? 0.8 // Tablet: 80%
         : 1.0; // Desktop: 100%
 
-    // Element spacing for clean layout
-    final elementSpacing = screenWidth < 400
+    // Element spacing for clean layout with safe scaling
+    final elementSpacing = ((screenWidth < 400
         ? 12.0
         : screenWidth < 600
         ? 14.0
@@ -71,7 +81,7 @@ class QuizHeader extends StatelessWidget {
         ? 16.0
         : screenWidth < 1400
         ? 18.0
-        : 20.0;
+        : 20.0) * spacingScale).clamp(8.0, 30.0);
 
     return Container(
       width: double.infinity,
@@ -96,79 +106,87 @@ class QuizHeader extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Left: Question counter
-              ScalableText(
-                '$currentQuestion/$totalQuestions',
-                style: AppTextStyles.bodyMedium(context).copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.darkText,
-                  fontSize: screenWidth < 400
-                      ? 13
-                      : screenWidth < 600
-                      ? 14
-                      : screenWidth < 900
-                      ? 15
-                      : screenWidth < 1400
-                      ? 16
-                      : 17,
+              // Left: Question counter with overflow protection
+              Flexible(
+                child: ScalableText(
+                  '$currentQuestion/$totalQuestions',
+                  style: AppTextStyles.bodyMedium(context).copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.darkText,
+                    fontSize: ((screenWidth < 400
+                        ? 13
+                        : screenWidth < 600
+                        ? 14
+                        : screenWidth < 900
+                        ? 15
+                        : screenWidth < 1400
+                        ? 16
+                        : 17) * fontScale).clamp(10.0, 20.0),
+                  ),
+                  autoScale: false,
                 ),
-                autoScale: false,
               ),
 
-              // Center: Slim gradient progress bar
+              // Center: Slim gradient progress bar with flex protection
               Expanded(
+                flex: 2,
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: elementSpacing),
-                  width: MediaQuery.of(context).size.width * progressBarWidth,
+                  constraints: const BoxConstraints(minWidth: 60.0),
                   child: _buildSlimProgressBar(progressHeight),
                 ),
               ),
 
-              // Right: Percentage text
-              ScalableText(
-                '${progressPercentage.toInt()}%',
-                style: AppTextStyles.bodyMedium(context).copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.darkText,
-                  fontSize: screenWidth < 400
-                      ? 13
-                      : screenWidth < 600
-                      ? 14
-                      : screenWidth < 900
-                      ? 15
-                      : screenWidth < 1400
-                      ? 16
-                      : 17,
+              // Right: Percentage text with overflow protection
+              Flexible(
+                child: ScalableText(
+                  '${progressPercentage.toInt()}%',
+                  style: AppTextStyles.bodyMedium(context).copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.darkText,
+                    fontSize: ((screenWidth < 400
+                        ? 13
+                        : screenWidth < 600
+                        ? 14
+                        : screenWidth < 900
+                        ? 15
+                        : screenWidth < 1400
+                        ? 16
+                        : 17) * fontScale).clamp(10.0, 20.0),
+                  ),
+                  autoScale: false,
                 ),
-                autoScale: false,
               ),
             ],
           ),
 
           SizedBox(height: elementSpacing * 0.6),
 
-          // Title text
+          // Title text with overflow protection
           Center(
-            child: ScalableText(
-              title,
-              style: AppTextStyles.headlineMedium(context).copyWith(
-                fontWeight: FontWeight.w600,
-                color: AppColors.darkText,
-                fontSize: screenWidth < 400
-                    ? 16
-                    : screenWidth < 600
-                    ? 18
-                    : screenWidth < 900
-                    ? 20
-                    : screenWidth < 1400
-                    ? 22
-                    : 24,
-                height: 1.2,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: elementSpacing * 0.5),
+              child: ScalableText(
+                title,
+                style: AppTextStyles.headlineMedium(context).copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.darkText,
+                  fontSize: ((screenWidth < 400
+                      ? 16
+                      : screenWidth < 600
+                      ? 18
+                      : screenWidth < 900
+                      ? 20
+                      : screenWidth < 1400
+                      ? 22
+                      : 24) * fontScale).clamp(12.0, 28.0),
+                  height: 1.2,
+                ),
+                textAlign: TextAlign.center,
+                autoScale: false,
+                maxLines: 3, // Increased for overflow protection
+                overflow: TextOverflow.ellipsis,
               ),
-              textAlign: TextAlign.center,
-              autoScale: false,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

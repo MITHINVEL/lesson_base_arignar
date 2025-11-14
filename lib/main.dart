@@ -67,13 +67,44 @@ class SimpleTaskWrapper extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final screenWidth = constraints.maxWidth;
+        final screenHeight = constraints.maxHeight;
 
-        // Enhanced responsive width calculation for zoom support
-        // Support 1366px @ 150% zoom (effective 911px) and all other scenarios
+        // PRODUCTION-SAFE: Check minimum layout requirements
+        const minWidth = 300.0;
+        const minHeight = 500.0;
+        
+        // If screen is too small, show fallback message
+        if (screenWidth < minWidth || screenHeight < minHeight) {
+          return Scaffold(
+            backgroundColor: const Color(0xFFFAF8EF),
+            body: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  'Screen size too small to display content.',
+                  style: TextStyle(
+                    fontSize: (screenWidth * 0.04).clamp(12.0, 18.0),
+                    color: const Color(0xFF424242),
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          );
+        }
+
+        // RESPONSIVE AUTO-SCALE: Calculate scale factor for small screens
+        double scaleFactor = 1.0;
+        if (screenWidth < 400 || screenHeight < 600) {
+          scaleFactor = (screenWidth / 400).clamp(0.7, 1.0);
+        }
+
+        // Enhanced responsive width calculation with safe constraints
         double targetWidth;
         if (screenWidth < 400) {
-          // Very small screens (old phones)
-          targetWidth = screenWidth.clamp(300.0, 380.0);
+          // Very small screens with auto-scaling
+          targetWidth = (screenWidth * 0.95).clamp(minWidth, 380.0);
         } else if (screenWidth < 600) {
           // Mobile screens
           targetWidth = screenWidth.clamp(380.0, 500.0);
@@ -91,16 +122,19 @@ class SimpleTaskWrapper extends StatelessWidget {
         return SizedBox(
           width: targetWidth,
           height: constraints.maxHeight,
-          child: _EmbeddedAwareSimpleTask(
-            onReady: () {},
-            chapterID: 'chapter-001',
-            lessonID: 'lesson-001',
-            onLessonComplete: () => _showSnackBar(context, 'Lesson Complete!'),
-            onExitPressed: () => _showSnackBar(context, 'Exit tapped'),
-            onJumpToQuestion: () =>
-                _showSnackBar(context, 'Jump to Question tapped'),
-            onPrevLessonPressed: () =>
-                _showSnackBar(context, 'Reached first lesson'),
+          child: Transform.scale(
+            scale: scaleFactor,
+            child: _EmbeddedAwareSimpleTask(
+              onReady: () {},
+              chapterID: 'chapter-001',
+              lessonID: 'lesson-001',
+              onLessonComplete: () => _showSnackBar(context, 'Lesson Complete!'),
+              onExitPressed: () => _showSnackBar(context, 'Exit tapped'),
+              onJumpToQuestion: () =>
+                  _showSnackBar(context, 'Jump to Question tapped'),
+              onPrevLessonPressed: () =>
+                  _showSnackBar(context, 'Reached first lesson'),
+            ),
           ),
         );
       },

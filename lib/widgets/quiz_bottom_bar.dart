@@ -24,33 +24,24 @@ class QuizBottomBar extends StatelessWidget {
         // Use physical screen width for zoom-independent calculations
         final screenWidth = responsive.physicalScreenWidth;
 
-        // ZOOM-STABLE: Accessibility-first button sizing with content scaling
-        final buttonSize =
-            (screenWidth < 600
-                ? 44.0 // Mobile: increased from 36 to 44
-                : screenWidth < 1024
-                ? 50.0 // Tablet: increased from 42 to 50
-                : 56.0) *
-            responsive.contentScale; // Desktop: increased from 48 to 56
+        // RESPONSIVE: Button sizing based on screen percentage - SMALLER SIZE
+        final buttonSize = (screenWidth * 0.10).clamp(
+          32.0,
+          48.0,
+        ); // REDUCED from 12% to 10%, smaller clamp
 
-        // Enhanced padding with zoom-aware scaling
-        final horizontalPadding =
-            (screenWidth < 600
-                ? 20.0 // Mobile: increased from 16 to 20
-                : screenWidth < 1024
-                ? 28.0 // Tablet: increased from 24 to 28
-                : 36.0) *
-            responsive.contentScale; // Desktop: increased from 32 to 36
+        // RESPONSIVE: Padding based on screen percentage - REDUCED HEIGHT
+        final horizontalPadding = screenWidth * 0.05; // 5% of screen width
+        final verticalPadding =
+            MediaQuery.of(context).size.height *
+            0.008; // REDUCED from 1.5% to 0.8%
 
         return SizedBox(
           width: double.infinity,
           child: Container(
             padding: EdgeInsets.symmetric(
               horizontal: horizontalPadding,
-              vertical:
-                  12.0 *
-                  responsive
-                      .contentScale, // Increased from 8.0 for better touch targets
+              vertical: verticalPadding, // Using responsive vertical padding
             ),
             decoration: const BoxDecoration(
               color: Color(0xFFFFF8E1), // Soft cream background
@@ -153,7 +144,7 @@ class QuizBottomBar extends StatelessWidget {
                 : const Color(0xFF9E9E9E),
             size:
                 buttonSize *
-                0.48, // Slightly increased for better visibility in compact size
+                0.50, // INCREASED from 0.40 to 0.50 for bigger, clearer icons
           ),
         ),
       ),

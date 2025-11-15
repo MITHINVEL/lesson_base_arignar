@@ -259,14 +259,14 @@ class _EmbeddedAwareSimpleTaskState extends State<_EmbeddedAwareSimpleTask> {
         final screenWidth = MediaQuery.of(context).size.width;
         final screenHeight = MediaQuery.of(context).size.height;
 
-        // Responsive width based on screen size
+        // Responsive width based on screen size - COMPACT SIZES
         double dialogWidth;
         if (screenWidth < 600) {
-          dialogWidth = screenWidth * 0.85; // Mobile: 85%
+          dialogWidth = screenWidth * 0.75; // Mobile: 75% (reduced from 85%)
         } else if (screenWidth < 1024) {
-          dialogWidth = screenWidth * 0.55; // Tablet: 55%
+          dialogWidth = screenWidth * 0.45; // Tablet: 45% (reduced from 55%)
         } else {
-          dialogWidth = screenWidth * 0.4; // Desktop: 40%
+          dialogWidth = screenWidth * 0.32; // Desktop: 32% (reduced from 40%)
         }
 
         return Dialog(
@@ -275,18 +275,18 @@ class _EmbeddedAwareSimpleTaskState extends State<_EmbeddedAwareSimpleTask> {
             width: dialogWidth,
             constraints: BoxConstraints(
               maxWidth: dialogWidth,
-              minWidth: 300,
-              maxHeight: screenHeight * 0.9, // Max 90% of screen height
+              minWidth: 280, // Reduced from 300
+              maxHeight: screenHeight * 0.75, // REDUCED from 90% to 75%
             ),
             decoration: BoxDecoration(
               color: const Color(0xFFFAF8EF),
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(16), // REDUCED from 24 to 16
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 30,
-                  offset: const Offset(0, 10),
-                  spreadRadius: 5,
+                  color: Colors.black.withOpacity(0.15), // Softer shadow
+                  blurRadius: 20, // Reduced from 30
+                  offset: const Offset(0, 6), // Reduced from 10
+                  spreadRadius: 2, // Reduced from 5
                 ),
               ],
             ),
@@ -312,16 +312,32 @@ class _EmbeddedAwareSimpleTaskState extends State<_EmbeddedAwareSimpleTask> {
     // Responsive sizing based on screen dimensions
     final isCompactScreen = screenWidth < 400 || screenHeight < 600;
 
-    // Adaptive dimensions
-    final basePadding = isCompactScreen ? 12.0 : (isMobile ? 16.0 : 20.0);
-    final iconSize = isCompactScreen ? 45.0 : (isMobile ? 55.0 : 65.0);
-    final iconInnerSize = isCompactScreen ? 24.0 : (isMobile ? 30.0 : 36.0);
-    final titleFontSize = isCompactScreen ? 18.0 : (isMobile ? 22.0 : 26.0);
-    final labelFontSize = isCompactScreen ? 12.0 : (isMobile ? 14.0 : 16.0);
-    final answerFontSize = isCompactScreen ? 13.0 : (isMobile ? 15.0 : 17.0);
-    final buttonHeight = isCompactScreen ? 42.0 : (isMobile ? 48.0 : 54.0);
-    final buttonFontSize = isCompactScreen ? 14.0 : (isMobile ? 16.0 : 18.0);
-    final spacing = isCompactScreen ? 8.0 : (isMobile ? 12.0 : 16.0);
+    // Adaptive dimensions - COMPACT SIZES
+    final basePadding = isCompactScreen
+        ? 10.0
+        : (isMobile ? 14.0 : 16.0); // Reduced
+    final iconSize = isCompactScreen
+        ? 38.0
+        : (isMobile ? 45.0 : 52.0); // Reduced
+    final iconInnerSize = isCompactScreen
+        ? 20.0
+        : (isMobile ? 24.0 : 28.0); // Reduced
+    final titleFontSize = isCompactScreen
+        ? 16.0
+        : (isMobile ? 20.0 : 22.0); // Reduced
+    final labelFontSize = isCompactScreen
+        ? 11.0
+        : (isMobile ? 13.0 : 14.0); // Reduced
+    final answerFontSize = isCompactScreen
+        ? 12.0
+        : (isMobile ? 14.0 : 15.0); // Reduced
+    final buttonHeight = isCompactScreen
+        ? 38.0
+        : (isMobile ? 42.0 : 46.0); // Reduced
+    final buttonFontSize = isCompactScreen
+        ? 13.0
+        : (isMobile ? 15.0 : 16.0); // Reduced
+    final spacing = isCompactScreen ? 6.0 : (isMobile ? 8.0 : 10.0); // Reduced
 
     return Column(
       mainAxisSize: MainAxisSize.min,

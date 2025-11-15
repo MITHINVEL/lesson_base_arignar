@@ -41,9 +41,9 @@ class QuestionContainer extends StatelessWidget {
           max: 14, // Reduced from 16
         );
         final verticalPadding = responsive.getFlexiblePadding(
-          base: 4, // MUCH SMALLER - reduced from 8 to 4
-          min: 2, // Very minimal - reduced from 4 to 2
-          max: 6, // Very compact - reduced from 12 to 6
+          base: 10, // INCREASED from 4 to 10 for more height
+          min: 6, // INCREASED from 2 to 6 for mobile
+          max: 14, // INCREASED from 6 to 14 for desktop
         );
 
         // Smart font sizing based on question length and container height
@@ -153,7 +153,8 @@ class QuestionContainer extends StatelessWidget {
                       child: Icon(
                         Icons.volume_up_rounded,
                         color: const Color(0xFFFF8F00), // Orange color
-                        size: speakerSize * 0.6,
+                        size:
+                            actualIconSize, // Use calculated responsive icon size
                       ),
                     ),
                   ),
